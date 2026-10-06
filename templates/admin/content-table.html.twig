@@ -2,6 +2,7 @@
     <table class="w-full text-sm">
         <thead class="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-500">
             <tr>
+                {% if user.role != 'viewer' %}<th class="w-10 px-5 py-3"></th>{% endif %}
                 <th class="px-5 py-3 font-medium">Title</th>
                 <th class="px-5 py-3 font-medium">Slug</th>
                 <th class="px-5 py-3 font-medium">Status</th>
@@ -12,6 +13,7 @@
         <tbody class="divide-y divide-slate-100">
             {% for r in rows %}
                 <tr class="hover:bg-slate-50">
+                    {% if user.role != 'viewer' %}<td class="px-5 py-3"><input type="checkbox" data-on:click="$sel = evt.target.checked ? $sel.concat('{{ r.id }}') : $sel.filter(x => x != '{{ r.id }}')"></td>{% endif %}
                     <td class="px-5 py-3">{% include 'admin/content-title-cell.html.twig' %}</td>
                     <td class="px-5 py-3 font-mono text-xs text-slate-500">{{ r.url }}</td>
                     <td class="px-5 py-3">
@@ -35,7 +37,7 @@
                     </td>
                 </tr>
             {% else %}
-                <tr><td colspan="5" class="px-5 py-10 text-center text-slate-400">No {{ label|lower }} yet.</td></tr>
+                <tr><td colspan="6" class="px-5 py-10 text-center text-slate-400">No {{ label|lower }} yet.</td></tr>
             {% endfor %}
         </tbody>
     </table>

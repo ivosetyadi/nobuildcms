@@ -526,7 +526,7 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
     }
 
     // Content: /admin/content/{type}[/edit|/save|/delete|/inline|/rename|/duplicate|/toggle]
-    if (preg_match('#^/admin/content/(pages|posts|products)(?:/(edit|save|delete|inline|rename|duplicate|toggle|preview))?$#', $path, $m)) {
+    if (preg_match('#^/admin/content/(pages|posts|products)(?:/(edit|save|delete|inline|rename|duplicate|toggle|preview|bulk))?$#', $path, $m)) {
         $type = $m[1];
         $op = $m[2] ?? 'list';
 
@@ -709,6 +709,32 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
                 $audit->log('content.status', $type . ':' . $rec['id'], ['status' => $next], $user);
             }
             Ds::patchElements($patchRows());
+            exit;
+        }
+
+        if ($op === 'bulk' && $method === 'POST') {
+            if (!$auth->can('edit')) {
+                http_response_code(403);
+                exit('Forbidden');
+            }
+            $ids = Ds::signals()['sel'] ?? [];
+            $do = $_GET['do'] ?? '';
+            foreach ((array) $ids as $id) {
+                $rec = $app->store->findById($type, (string) $id);
+                if (!$rec) {
+                    continue;
+                }
+                if ($do === 'publish' || $do === 'draft') {
+                    $app->store->save($type, ['id' => $rec['id'], 'status' => $do === 'publish' ? 'published' : 'draft']);
+                    $audit->log('content.status', $type . ':' . $rec['id'], ['status' => $do, 'bulk' => true], $user);
+                } elseif ($do === 'trash') {
+                    $trash->capture($type, $rec, $user);
+                    $app->store->delete($type, $rec['id']);
+                    $audit->log('content.trash', $type . ':' . $rec['id'], ['bulk' => true], $user);
+                }
+            }
+            Ds::patchElements($patchRows());
+            Ds::patchSignals(['sel' => []]);
             exit;
         }
 
