@@ -89,7 +89,7 @@ nobuildcms/
 
 - [x] **Phase 1** — MVP core (public render, SSE reload, auth, content CRUD, settings)
 - [x] **Phase 2 (library)** — Snippets, Datasets, Media upload
-- [ ] **Phase 2 (editor UX)** — off-canvas editor, inline edit
+- [x] **Phase 2 (editor UX)** — off-canvas editor, inline edit (Datastar `@get`/`@post` → SSE patches)
 - [ ] **Phase 3** — Real-time visitor chat (SSE)
 - [ ] **Phase 4** — RBAC (Owner/Editor/Viewer), immutable Audit log, Trash
 - [ ] **Phase 5** — Multi-tenant Workspaces, Datastar Lab examples

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use NoBuildCMS\App;
 use NoBuildCMS\Auth;
+use NoBuildCMS\Ds;
 
 // Serve existing static files (assets) directly under the built-in server.
 if (PHP_SAPI === 'cli-server') {
@@ -237,10 +238,16 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
         exit;
     }
 
-    // Content: /admin/content/{type}[/edit|/save|/delete]
-    if (preg_match('#^/admin/content/(pages|posts|products)(?:/(edit|save|delete))?$#', $path, $m)) {
+    // Content: /admin/content/{type}[/edit|/save|/delete|/inline|/rename]
+    if (preg_match('#^/admin/content/(pages|posts|products)(?:/(edit|save|delete|inline|rename))?$#', $path, $m)) {
         $type = $m[1];
         $op = $m[2] ?? 'list';
+
+        // Re-render the content table (used by Datastar list patches).
+        $patchRows = function () use ($app, $type, $types) {
+            $rows = array_map([$app, 'decorate'], $app->store->all($type));
+            return $app->render('admin/content-table.html.twig', ['type' => $type, 'label' => $types[$type], 'rows' => $rows]);
+        };
 
         if ($op === 'save' && $method === 'POST') {
             if (!$auth->can('edit')) {
@@ -268,6 +275,12 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
                 ];
             }
             $app->store->save($type, $rec);
+            if (Ds::isRequest()) {
+                Ds::start();
+                Ds::patchElements($patchRows());
+                Ds::patchSignals(['drawerOpen' => false]);
+                exit;
+            }
             $redirect('/admin/content/' . $type);
         }
 
@@ -283,12 +296,51 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
         if ($op === 'edit') {
             $id = $_GET['id'] ?? '';
             $record = $id ? $app->store->findById($type, $id) : null;
+            if ($record) {
+                $record = $app->decorate($record);
+            }
+            if (Ds::isRequest()) {
+                Ds::start();
+                Ds::patchElements($app->render('admin/editor-fragment.html.twig', [
+                    'type' => $type, 'label' => $types[$type], 'record' => $record,
+                ]));
+                exit;
+            }
             echo $app->render('admin/editor.html.twig', [
                 'user' => $user, 'types' => $types, 'type' => $type,
                 'label' => $types[$type], 'record' => $record,
                 'active' => $type, 'title' => ($record ? 'Edit ' : 'New: ') . $types[$type],
                 'subtitle' => $record['slug'] ?? '',
             ]);
+            exit;
+        }
+
+        if ($op === 'inline') {
+            $id = $_GET['id'] ?? '';
+            $rec = $id ? $app->store->findById($type, $id) : null;
+            if ($rec) {
+                $rec = $app->decorate($rec);
+                Ds::start();
+                $tpl = ($_GET['cancel'] ?? '') ? 'admin/content-title-cell.html.twig' : 'admin/content-title-edit.html.twig';
+                Ds::patchElements($app->render($tpl, ['type' => $type, 'r' => $rec]));
+            }
+            exit;
+        }
+
+        if ($op === 'rename' && $method === 'POST') {
+            if (!$auth->can('edit')) {
+                http_response_code(403);
+                exit('Forbidden');
+            }
+            $id = $_GET['id'] ?? '';
+            $rec = $id ? $app->store->findById($type, $id) : null;
+            if ($rec) {
+                $title = trim($_POST['title'] ?? '') ?: $rec['title'];
+                $app->store->save($type, ['id' => $id, 'title' => $title]);
+                $rec = $app->decorate($app->store->findById($type, $id));
+                Ds::start();
+                Ds::patchElements($app->render('admin/content-title-cell.html.twig', ['type' => $type, 'r' => $rec]));
+            }
             exit;
         }
 
