@@ -2,16 +2,16 @@
     {
         "id": "pg_home",
         "type": "page",
-        "title": "Beranda",
+        "title": "Home",
         "slug": "home",
         "layout": "full",
         "status": "published",
-        "excerpt": "Mini CMS & dashboard tanpa build step.",
+        "excerpt": "A mini CMS & dashboard with no build step.",
         "tags": [],
         "reads": 5418,
         "created_at": "2026-07-08T10:00:00",
         "updated_at": "2026-07-08T10:00:00",
-        "body": "<section class='mx-auto max-w-6xl px-5 py-12'> <div class='overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 to-violet-700 px-8 py-16 text-white'> <span class='inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-medium'><span class='h-2 w-2 rounded-full bg-emerald-400'></span> Live</span> <h1 class='mt-5 text-4xl font-bold leading-tight md:text-5xl'>{{ settings.site_name }}<br>{{ settings.tagline }}</h1> <p class='mt-4 max-w-xl text-indigo-100'>Halo, {{ visitor.name }}! Halaman ini dirender dari record JSON lewat template Twig. Ubah judul, harga, atau isi di dashboard, lalu lihat halaman ini berubah tanpa reload.</p> <div class='mt-8 flex flex-wrap gap-3'> <a href='/produk' class='rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-slate-100'>Lihat produk</a> <a href='/blog' class='rounded-xl bg-white/10 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/20'>Baca artikel</a> <a href='/admin' class='rounded-xl px-5 py-2.5 text-sm font-semibold text-indigo-100 hover:text-white'>Buka dashboard →</a> </div> </div> <div class='mt-8 grid grid-cols-3 gap-4'> <div class='rounded-2xl border border-slate-200 bg-white p-5 text-center'><div class='text-xs uppercase tracking-wide text-slate-500'>Artikel</div><div class='mt-1 text-3xl font-bold text-slate-900'>{{ collection('posts')|length }}</div></div> <div class='rounded-2xl border border-slate-200 bg-white p-5 text-center'><div class='text-xs uppercase tracking-wide text-slate-500'>Produk</div><div class='mt-1 text-3xl font-bold text-slate-900'>{{ collection('products')|length }}</div></div> <div class='rounded-2xl border border-slate-200 bg-white p-5 text-center'><div class='text-xs uppercase tracking-wide text-slate-500'>Halaman</div><div class='mt-1 text-3xl font-bold text-slate-900'>{{ collection('pages', {status:'*'})|length }}</div></div> </div> <h2 class='mt-14 text-xl font-bold text-slate-900'>Produk unggulan</h2> <p class='mt-1 text-sm text-slate-500'>collection('products', where attrs.featured = true)</p> <div class='mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4'> {% for p in collection('products', {where:{'attrs.featured':true}, limit:4}) %} <a href='{{ p.url }}' class='group rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm'> <div class='text-3xl'>{{ p.attrs.emoji|default('📦') }}</div> <div class='mt-3 text-xs uppercase tracking-wide text-slate-400'>{{ p.attrs.category }}</div> <div class='font-semibold text-slate-900'>{{ p.title }}</div> <div class='mt-1 text-sm text-slate-500'>{{ p.attrs.price|money }} · {% if p.attrs.stock > 0 %}Stok {{ p.attrs.stock }}{% else %}<span class='text-rose-500'>Habis</span>{% endif %}</div> </a> {% endfor %} </div> <h2 class='mt-14 text-xl font-bold text-slate-900'>Artikel terbaru</h2> <div class='mt-5 grid gap-4 md:grid-cols-3'> {% for a in collection('posts', {sort:'-created_at', limit:3}) %} <a href='{{ a.url }}' class='rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-indigo-300'> <div class='text-xs text-slate-400'>{{ a.created_at|fdate('d M Y') }}</div> <div class='mt-1 font-semibold text-slate-900'>{{ a.title }}</div> <p class='mt-1 text-sm text-slate-500'>{{ a.excerpt }}</p> </a> {% endfor %} </div> </section>"
+        "body": "<section class='mx-auto max-w-6xl px-5 py-12'> <div class='overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 to-violet-700 px-8 py-16 text-white'> <span class='inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-medium'><span class='h-2 w-2 rounded-full bg-emerald-400'></span> Live</span> <h1 class='mt-5 text-4xl font-bold leading-tight md:text-5xl'>{{ settings.site_name }}<br>{{ settings.tagline }}</h1> <p class='mt-4 max-w-xl text-indigo-100'>Hi {{ visitor.name }}! This page is rendered from a JSON record through a Twig template. Edit a title, price, or body in the dashboard and watch this page change without a reload.</p> <div class='mt-8 flex flex-wrap gap-3'> <a href='/products' class='rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-slate-900 hover:bg-slate-100'>View products</a> <a href='/blog' class='rounded-xl bg-white/10 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/20'>Read articles</a> <a href='/admin' class='rounded-xl px-5 py-2.5 text-sm font-semibold text-indigo-100 hover:text-white'>Open dashboard →</a> </div> </div> <div class='mt-8 grid grid-cols-3 gap-4'> <div class='rounded-2xl border border-slate-200 bg-white p-5 text-center'><div class='text-xs uppercase tracking-wide text-slate-500'>Articles</div><div class='mt-1 text-3xl font-bold text-slate-900'>{{ collection('posts')|length }}</div></div> <div class='rounded-2xl border border-slate-200 bg-white p-5 text-center'><div class='text-xs uppercase tracking-wide text-slate-500'>Products</div><div class='mt-1 text-3xl font-bold text-slate-900'>{{ collection('products')|length }}</div></div> <div class='rounded-2xl border border-slate-200 bg-white p-5 text-center'><div class='text-xs uppercase tracking-wide text-slate-500'>Pages</div><div class='mt-1 text-3xl font-bold text-slate-900'>{{ collection('pages', {status:'*'})|length }}</div></div> </div> <h2 class='mt-14 text-xl font-bold text-slate-900'>Featured products</h2> <p class='mt-1 text-sm text-slate-500'>collection('products', where attrs.featured = true)</p> <div class='mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4'> {% for p in collection('products', {where:{'attrs.featured':true}, limit:4}) %} <a href='{{ p.url }}' class='group rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm'> <div class='text-3xl'>{{ p.attrs.emoji|default('📦') }}</div> <div class='mt-3 text-xs uppercase tracking-wide text-slate-400'>{{ p.attrs.category }}</div> <div class='font-semibold text-slate-900'>{{ p.title }}</div> <div class='mt-1 text-sm text-slate-500'>{{ p.attrs.price|money }} · {% if p.attrs.stock > 0 %}{{ p.attrs.stock }} in stock{% else %}<span class='text-rose-500'>Sold out</span>{% endif %}</div> </a> {% endfor %} </div> <h2 class='mt-14 text-xl font-bold text-slate-900'>Latest articles</h2> <div class='mt-5 grid gap-4 md:grid-cols-3'> {% for a in collection('posts', {sort:'-created_at', limit:3}) %} <a href='{{ a.url }}' class='rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-indigo-300'> <div class='text-xs text-slate-400'>{{ a.created_at|fdate('d M Y') }}</div> <div class='mt-1 font-semibold text-slate-900'>{{ a.title }}</div> <p class='mt-1 text-sm text-slate-500'>{{ a.excerpt }}</p> </a> {% endfor %} </div> </section>"
     },
     {
         "id": "pg_blog",
@@ -20,53 +20,53 @@
         "slug": "blog",
         "layout": "full",
         "status": "published",
-        "excerpt": "Catatan teknis hypermedia & CMS flat-file.",
+        "excerpt": "Technical notes on hypermedia & flat-file CMS.",
         "tags": [],
         "reads": 1852,
         "created_at": "2026-07-10T10:00:00",
         "updated_at": "2026-07-10T10:00:00",
-        "body": "<section class='mx-auto max-w-4xl px-5 py-14'> <h1 class='text-3xl font-bold text-slate-900'>Blog</h1> <p class='mt-2 text-slate-500'>Catatan seputar hypermedia, Datastar, SSE, dan CMS flat-file.</p> <div class='mt-8 space-y-4'> {% for a in collection('posts', {sort:'-created_at'}) %} <a href='{{ a.url }}' class='block rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-indigo-300'> <div class='text-xs text-slate-400'>{{ a.created_at|fdate('d M Y') }}</div> <div class='mt-1 text-lg font-semibold text-slate-900'>{{ a.title }}</div> <p class='mt-1 text-sm text-slate-500'>{{ a.excerpt }}</p> <div class='mt-2 flex flex-wrap gap-2'>{% for t in a.tags %}<span class='rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600'>#{{ t }}</span>{% endfor %}</div> </a> {% endfor %} </div> </section>"
+        "body": "<section class='mx-auto max-w-4xl px-5 py-14'> <h1 class='text-3xl font-bold text-slate-900'>Blog</h1> <p class='mt-2 text-slate-500'>Notes on hypermedia, Datastar, SSE, and flat-file CMS design.</p> <div class='mt-8 space-y-4'> {% for a in collection('posts', {sort:'-created_at'}) %} <a href='{{ a.url }}' class='block rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-indigo-300'> <div class='text-xs text-slate-400'>{{ a.created_at|fdate('d M Y') }}</div> <div class='mt-1 text-lg font-semibold text-slate-900'>{{ a.title }}</div> <p class='mt-1 text-sm text-slate-500'>{{ a.excerpt }}</p> <div class='mt-2 flex flex-wrap gap-2'>{% for t in a.tags %}<span class='rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600'>#{{ t }}</span>{% endfor %}</div> </a> {% endfor %} </div> </section>"
     },
     {
         "id": "pg_produk",
         "type": "page",
-        "title": "Produk",
-        "slug": "produk",
+        "title": "Products",
+        "slug": "products",
         "layout": "full",
         "status": "published",
-        "excerpt": "Katalog produk contoh.",
+        "excerpt": "Sample product catalog.",
         "tags": [],
         "reads": 2446,
         "created_at": "2026-07-11T10:00:00",
         "updated_at": "2026-07-11T10:00:00",
-        "body": "<section class='mx-auto max-w-6xl px-5 py-14'> <h1 class='text-3xl font-bold text-slate-900'>Produk</h1> <p class='mt-2 text-slate-500'>Semua harga & stok dibaca langsung dari record JSON.</p> <div class='mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3'> {% for p in collection('products') %} <a href='{{ p.url }}' class='rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm'> <div class='text-3xl'>{{ p.attrs.emoji|default('📦') }}</div> <div class='mt-3 text-xs uppercase tracking-wide text-slate-400'>{{ p.attrs.category }}</div> <div class='font-semibold text-slate-900'>{{ p.title }}</div> <p class='mt-1 text-sm text-slate-500'>{{ p.excerpt }}</p> <div class='mt-2 font-semibold text-slate-900'>{{ p.attrs.price|money }}</div> <div class='text-xs {% if p.attrs.stock > 0 %}text-emerald-600{% else %}text-rose-500{% endif %}'>{% if p.attrs.stock > 0 %}Stok {{ p.attrs.stock }}{% else %}Habis{% endif %}</div> </a> {% endfor %} </div> </section>"
+        "body": "<section class='mx-auto max-w-6xl px-5 py-14'> <h1 class='text-3xl font-bold text-slate-900'>Products</h1> <p class='mt-2 text-slate-500'>Every price &amp; stock value is read straight from a JSON record.</p> <div class='mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3'> {% for p in collection('products') %} <a href='{{ p.url }}' class='rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-indigo-300 hover:shadow-sm'> <div class='text-3xl'>{{ p.attrs.emoji|default('📦') }}</div> <div class='mt-3 text-xs uppercase tracking-wide text-slate-400'>{{ p.attrs.category }}</div> <div class='font-semibold text-slate-900'>{{ p.title }}</div> <p class='mt-1 text-sm text-slate-500'>{{ p.excerpt }}</p> <div class='mt-2 font-semibold text-slate-900'>{{ p.attrs.price|money }}</div> <div class='text-xs {% if p.attrs.stock > 0 %}text-emerald-600{% else %}text-rose-500{% endif %}'>{% if p.attrs.stock > 0 %}{{ p.attrs.stock }} in stock{% else %}Sold out{% endif %}</div> </a> {% endfor %} </div> </section>"
     },
     {
         "id": "pg_tentang",
         "type": "page",
-        "title": "Tentang Kami",
-        "slug": "tentang",
+        "title": "About",
+        "slug": "about",
         "layout": "article",
         "status": "published",
-        "excerpt": "Apa itu NoBuildCMS.",
+        "excerpt": "What NoBuildCMS is.",
         "tags": [],
         "reads": 669,
         "created_at": "2026-07-17T10:00:00",
         "updated_at": "2026-07-17T10:00:00",
-        "body": "<section class='mx-auto max-w-3xl px-5 py-14'> <h1 class='text-3xl font-bold text-slate-900'>Tentang Kami</h1> <p class='mt-4 text-slate-600'>NoBuildCMS adalah mini CMS & dashboard hypermedia. Backend PHP native, template Twig tersandbox, reaktivitas Datastar, dan data tersimpan sebagai berkas JSON — tanpa database, tanpa build step.</p> <p class='mt-4 text-slate-600'>Setiap perubahan di dashboard tampil real-time di situs publik lewat SSE. Konten adalah template Twig yang bisa memanggil koleksi lain, dataset, dan snippet.</p> </section>"
+        "body": "<section class='mx-auto max-w-3xl px-5 py-14'> <h1 class='text-3xl font-bold text-slate-900'>About</h1> <p class='mt-4 text-slate-600'>NoBuildCMS is a mini CMS &amp; hypermedia dashboard. The backend is native PHP, templates are sandboxed Twig, reactivity is powered by Datastar, and data is stored as JSON files — no database, no build step.</p> <p class='mt-4 text-slate-600'>Every change in the dashboard shows up on the public site in real time over SSE. Content is a Twig template that can query other collections, datasets, and snippets.</p> </section>"
     },
     {
         "id": "pg_kontak",
         "type": "page",
-        "title": "Kontak",
-        "slug": "kontak",
+        "title": "Contact",
+        "slug": "contact",
         "layout": "article",
         "status": "published",
-        "excerpt": "Hubungi kami.",
+        "excerpt": "Get in touch.",
         "tags": [],
         "reads": 543,
         "created_at": "2026-07-19T10:00:00",
         "updated_at": "2026-07-19T10:00:00",
-        "body": "<section class='mx-auto max-w-3xl px-5 py-14'> <h1 class='text-3xl font-bold text-slate-900'>Kontak</h1> <div class='mt-6 grid gap-4 sm:grid-cols-2'> <div class='rounded-2xl border border-slate-200 bg-white p-5'><div class='text-xs uppercase tracking-wide text-slate-400'>WhatsApp</div><div class='mt-1 font-medium text-slate-900'>+{{ settings.whatsapp }}</div></div> <div class='rounded-2xl border border-slate-200 bg-white p-5'><div class='text-xs uppercase tracking-wide text-slate-400'>Email</div><div class='mt-1 font-medium text-slate-900'>{{ settings.email }}</div></div> <div class='rounded-2xl border border-slate-200 bg-white p-5'><div class='text-xs uppercase tracking-wide text-slate-400'>Telegram</div><div class='mt-1 font-medium text-slate-900'>@{{ settings.telegram }}</div></div> <div class='rounded-2xl border border-slate-200 bg-white p-5'><div class='text-xs uppercase tracking-wide text-slate-400'>Alamat</div><div class='mt-1 font-medium text-slate-900'>{{ settings.address }}</div></div> </div> <div class='mt-8 rounded-2xl border border-slate-200 bg-white p-5' data-signals='{qty:1}'> <div class='text-sm text-slate-600'>Demo Datastar — hitung total tanpa reload:</div> <div class='mt-3 flex items-center gap-3'> <button type='button' class='h-9 w-9 rounded-lg border border-slate-200 text-lg leading-none hover:bg-slate-50' data-on:click='$qty = Math.max(1, $qty - 1)'>−</button> <input type='number' class='w-16 rounded-lg border border-slate-200 px-2 py-1 text-center' data-bind='qty'> <button type='button' class='h-9 w-9 rounded-lg border border-slate-200 text-lg leading-none hover:bg-slate-50' data-on:click='$qty = $qty + 1'>+</button> <span class='font-semibold text-slate-900' data-text=\"'Total: Rp ' + ($qty * 1500000).toLocaleString('id-ID')\"></span> </div> </div> </section>"
+        "body": "<section class='mx-auto max-w-3xl px-5 py-14'> <h1 class='text-3xl font-bold text-slate-900'>Contact</h1> <div class='mt-6 grid gap-4 sm:grid-cols-2'> <div class='rounded-2xl border border-slate-200 bg-white p-5'><div class='text-xs uppercase tracking-wide text-slate-400'>WhatsApp</div><div class='mt-1 font-medium text-slate-900'>+{{ settings.whatsapp }}</div></div> <div class='rounded-2xl border border-slate-200 bg-white p-5'><div class='text-xs uppercase tracking-wide text-slate-400'>Email</div><div class='mt-1 font-medium text-slate-900'>{{ settings.email }}</div></div> <div class='rounded-2xl border border-slate-200 bg-white p-5'><div class='text-xs uppercase tracking-wide text-slate-400'>Telegram</div><div class='mt-1 font-medium text-slate-900'>@{{ settings.telegram }}</div></div> <div class='rounded-2xl border border-slate-200 bg-white p-5'><div class='text-xs uppercase tracking-wide text-slate-400'>Address</div><div class='mt-1 font-medium text-slate-900'>{{ settings.address }}</div></div> </div> <div class='mt-8 rounded-2xl border border-slate-200 bg-white p-5' data-signals='{qty:1}'> <div class='text-sm text-slate-600'>Datastar demo — compute a total without a reload:</div> <div class='mt-3 flex items-center gap-3'> <button type='button' class='h-9 w-9 rounded-lg border border-slate-200 text-lg leading-none hover:bg-slate-50' data-on:click='$qty = Math.max(1, $qty - 1)'>−</button> <input type='number' class='w-16 rounded-lg border border-slate-200 px-2 py-1 text-center' data-bind='qty'> <button type='button' class='h-9 w-9 rounded-lg border border-slate-200 text-lg leading-none hover:bg-slate-50' data-on:click='$qty = $qty + 1'>+</button> <span class='font-semibold text-slate-900' data-text=\"'Total: Rp ' + ($qty * 1500000).toLocaleString('en-US')\"></span> </div> </div> </section>"
     }
 ]

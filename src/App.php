@@ -23,7 +23,7 @@ final class App
 {
     public Store $store;
     public array $settings;
-    public array $visitor = ['name' => 'Tamu', 'id' => null];
+    public array $visitor = ['name' => 'Guest', 'id' => null];
 
     private Environment $view;
     private Environment $content;
@@ -76,7 +76,7 @@ final class App
         $slug = $r['slug'] ?? '';
         return match ($r['type'] ?? 'page') {
             'post' => '/blog/' . $slug,
-            'product' => '/produk/' . $slug,
+            'product' => '/products/' . $slug,
             default => $slug === 'home' ? '/' : '/' . $slug,
         };
     }

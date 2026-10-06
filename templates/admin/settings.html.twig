@@ -1,22 +1,22 @@
 {% extends 'layouts/admin.html.twig' %}
 {% block actions %}
-    <button form="settings-form" class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">Simpan</button>
+    <button form="settings-form" class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">Save</button>
 {% endblock %}
 {% block main %}
     <form id="settings-form" method="post" action="/admin/settings" class="grid max-w-4xl gap-6 md:grid-cols-2">
         <div class="rounded-2xl border border-slate-200 bg-white p-5 space-y-4">
-            <h2 class="font-semibold">Situs</h2>
-            {% for k, lbl in {'site_name':'Nama situs','tagline':'Tagline','footer':'Teks footer'} %}
+            <h2 class="font-semibold">Site</h2>
+            {% for k, lbl in {'site_name':'Site name','tagline':'Tagline','footer':'Footer text'} %}
                 <div><label class="text-sm text-slate-600">{{ lbl }}</label><input name="{{ k }}" value="{{ s[k]|default('') }}" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400"></div>
             {% endfor %}
             <div class="grid grid-cols-2 gap-4">
-                <div><label class="text-sm text-slate-600">Mata uang</label><input name="currency" value="{{ s.currency|default('IDR') }}" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></div>
-                <div><label class="text-sm text-slate-600">Warna aksen</label><input name="accent" value="{{ s.accent|default('#5c78e2') }}" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></div>
+                <div><label class="text-sm text-slate-600">Currency</label><input name="currency" value="{{ s.currency|default('IDR') }}" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></div>
+                <div><label class="text-sm text-slate-600">Accent color</label><input name="accent" value="{{ s.accent|default('#5c78e2') }}" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></div>
             </div>
         </div>
         <div class="rounded-2xl border border-slate-200 bg-white p-5 space-y-4">
-            <h2 class="font-semibold">Kontak publik</h2>
-            {% for k, lbl in {'whatsapp':'WhatsApp','telegram':'Telegram','email':'Email','address':'Alamat'} %}
+            <h2 class="font-semibold">Public contact</h2>
+            {% for k, lbl in {'whatsapp':'WhatsApp','telegram':'Telegram','email':'Email','address':'Address'} %}
                 <div><label class="text-sm text-slate-600">{{ lbl }}</label><input name="{{ k }}" value="{{ s[k]|default('') }}" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400"></div>
             {% endfor %}
         </div>

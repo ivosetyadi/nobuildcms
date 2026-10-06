@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,27 +15,27 @@
                 {{ settings.site_name }}
             </div>
             <nav class="flex-1 space-y-1 px-3 py-2 text-sm">
-                <div class="px-2 pb-1 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Utama</div>
-                <a href="/admin" class="block rounded-lg px-3 py-2 {{ active == 'home' ? 'bg-indigo-50 font-medium text-indigo-700' : 'text-slate-700 hover:bg-slate-50' }}">Ringkasan</a>
-                <div class="px-2 pb-1 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Konten</div>
+                <div class="px-2 pb-1 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Main</div>
+                <a href="/admin" class="block rounded-lg px-3 py-2 {{ active == 'home' ? 'bg-indigo-50 font-medium text-indigo-700' : 'text-slate-700 hover:bg-slate-50' }}">Overview</a>
+                <div class="px-2 pb-1 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Content</div>
                 {% for t, lbl in types %}
                     <a href="/admin/content/{{ t }}" class="block rounded-lg px-3 py-2 {{ active == t ? 'bg-indigo-50 font-medium text-indigo-700' : 'text-slate-700 hover:bg-slate-50' }}">{{ lbl }}</a>
                 {% endfor %}
-                <div class="px-2 pb-1 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Sistem</div>
-                <a href="/admin/settings" class="block rounded-lg px-3 py-2 {{ active == 'settings' ? 'bg-indigo-50 font-medium text-indigo-700' : 'text-slate-700 hover:bg-slate-50' }}">Pengaturan</a>
-                <a href="/" target="_blank" class="block rounded-lg px-3 py-2 text-slate-700 hover:bg-slate-50">Lihat situs ↗</a>
+                <div class="px-2 pb-1 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-400">System</div>
+                <a href="/admin/settings" class="block rounded-lg px-3 py-2 {{ active == 'settings' ? 'bg-indigo-50 font-medium text-indigo-700' : 'text-slate-700 hover:bg-slate-50' }}">Settings</a>
+                <a href="/" target="_blank" class="block rounded-lg px-3 py-2 text-slate-700 hover:bg-slate-50">View site ↗</a>
             </nav>
             <div class="border-t border-slate-200 px-5 py-3 text-sm">
                 <div class="font-medium">{{ user.name }}</div>
                 <div class="text-xs text-slate-500">{{ user.email }} · {{ user.role }}</div>
-                <a href="/admin/logout" class="mt-1 inline-block text-xs text-rose-600 hover:underline">Keluar</a>
+                <a href="/admin/logout" class="mt-1 inline-block text-xs text-rose-600 hover:underline">Sign out</a>
             </div>
         </aside>
 
         <div class="flex-1">
             <header class="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4">
                 <div>
-                    <h1 class="text-lg font-bold">{{ title|default('Ringkasan') }}</h1>
+                    <h1 class="text-lg font-bold">{{ title|default('Overview') }}</h1>
                     <p class="text-sm text-slate-500">{{ subtitle|default('') }}</p>
                 </div>
                 {% block actions %}{% endblock %}

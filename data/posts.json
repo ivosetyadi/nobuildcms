@@ -2,43 +2,43 @@
     {
         "id": "po_datastar",
         "type": "post",
-        "title": "Mengenal Datastar: hypermedia dengan signals",
-        "slug": "mengenal-datastar",
+        "title": "Getting to know Datastar: hypermedia with signals",
+        "slug": "getting-to-know-datastar",
         "layout": "article",
         "status": "published",
-        "excerpt": "Pengantar singkat tentang signal, SSE, dan patch elemen.",
+        "excerpt": "A short intro to signals, SSE, and element patching.",
         "tags": ["datastar", "hypermedia"],
         "reads": 569,
         "created_at": "2026-10-03T10:25:00",
         "updated_at": "2026-10-04T10:25:00",
-        "body": "<p class='lead text-lg text-slate-600'>Datastar menggabungkan dua ide: <strong>signals</strong> di klien dan <strong>SSE</strong> dari server.</p><p class='mt-4 text-slate-600'>Signal adalah state reaktif kecil yang hidup di atribut <code>data-signals</code>. Server bisa mendorong potongan HTML kapan saja lewat SSE, lalu Datastar mem-<em>morph</em> DOM yang ada sehingga fokus input dan scroll tetap terjaga.</p><h2 class='mt-8 text-xl font-bold text-slate-900'>Kenapa hypermedia?</h2><p class='mt-3 text-slate-600'>Tidak ada state ganda di klien. Sumber kebenaran tetap di server; klien hanya menampilkan.</p>"
+        "body": "<p class='lead text-lg text-slate-600'>Datastar combines two ideas: <strong>signals</strong> on the client and <strong>SSE</strong> from the server.</p><p class='mt-4 text-slate-600'>A signal is a small piece of reactive state that lives in a <code>data-signals</code> attribute. The server can push HTML fragments at any time over SSE, and Datastar <em>morphs</em> the existing DOM so input focus and scroll position are preserved.</p><h2 class='mt-8 text-xl font-bold text-slate-900'>Why hypermedia?</h2><p class='mt-3 text-slate-600'>There is no duplicate state on the client. The source of truth stays on the server; the client only renders.</p>"
     },
     {
         "id": "po_sse",
         "type": "post",
-        "title": "SSE di PHP native tanpa framework",
-        "slug": "sse-php-native",
+        "title": "SSE in native PHP without a framework",
+        "slug": "sse-in-native-php",
         "layout": "article",
         "status": "published",
-        "excerpt": "Menulis stream event-stream yang rapi dengan flush dan deteksi koneksi putus.",
+        "excerpt": "Writing a clean event-stream with flush and dropped-connection detection.",
         "tags": ["php", "sse"],
         "reads": 1702,
         "created_at": "2026-09-30T10:25:00",
         "updated_at": "2026-09-30T10:25:00",
-        "body": "<p class='lead text-lg text-slate-600'>Server-Sent Events hanyalah respons HTTP dengan <code>Content-Type: text/event-stream</code> yang tidak pernah ditutup.</p><p class='mt-4 text-slate-600'>Kuncinya: matikan buffering, kirim <code>data:</code> diikuti baris kosong, lalu <code>flush()</code>. Deteksi koneksi putus dengan <code>connection_aborted()</code> supaya loop berhenti.</p>"
+        "body": "<p class='lead text-lg text-slate-600'>Server-Sent Events are just an HTTP response with <code>Content-Type: text/event-stream</code> that is never closed.</p><p class='mt-4 text-slate-600'>The key: disable buffering, send <code>data:</code> followed by a blank line, then <code>flush()</code>. Detect a dropped connection with <code>connection_aborted()</code> so the loop stops.</p>"
     },
     {
         "id": "po_json",
         "type": "post",
-        "title": "Flat-file JSON sebagai database prototipe",
-        "slug": "flat-file-json",
+        "title": "Flat-file JSON as a prototype database",
+        "slug": "flat-file-json-database",
         "layout": "article",
         "status": "published",
-        "excerpt": "Kapan JSON cukup, dan bagaimana menulisnya dengan aman.",
+        "excerpt": "When JSON is enough, and how to write it safely.",
         "tags": ["json", "data"],
         "reads": 1408,
         "created_at": "2026-09-27T10:25:00",
         "updated_at": "2026-09-28T10:25:00",
-        "body": "<p class='lead text-lg text-slate-600'>Untuk situs konten berskala kecil-menengah, berkas JSON sudah cukup: mudah dibaca, mudah di-diff di Git, dan nol konfigurasi.</p><p class='mt-4 text-slate-600'>Tulis dengan <code>LOCK_EX</code> agar aman dari tulis bersamaan, dan simpan dengan <code>JSON_PRETTY_PRINT</code> supaya ramah untuk code review.</p>"
+        "body": "<p class='lead text-lg text-slate-600'>For small-to-medium content sites, JSON files are plenty: easy to read, easy to diff in Git, and zero configuration.</p><p class='mt-4 text-slate-600'>Write with <code>LOCK_EX</code> to stay safe under concurrent writes, and store with <code>JSON_PRETTY_PRINT</code> to keep it review-friendly.</p>"
     }
 ]

@@ -22,7 +22,7 @@ $auth = new Auth($app->store);
 
 // Assign a stable visitor identity.
 if (empty($_SESSION['visitor'])) {
-    $_SESSION['visitor'] = ['name' => 'Tamu ' . random_int(1000, 9999), 'id' => bin2hex(random_bytes(4))];
+    $_SESSION['visitor'] = ['name' => 'Guest ' . random_int(1000, 9999), 'id' => bin2hex(random_bytes(4))];
 }
 $app->setVisitor($_SESSION['visitor']);
 
@@ -33,7 +33,7 @@ $path = rtrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/') ?: '/';
 $renderPublic = function (?array $record) use ($app): string {
     if (!$record) {
         http_response_code(404);
-        $record = ['type' => 'page', 'title' => '404', 'body' => "<section class='mx-auto max-w-3xl px-5 py-24 text-center'><h1 class='text-4xl font-bold text-slate-900'>404</h1><p class='mt-2 text-slate-500'>Halaman tidak ditemukan.</p></section>"];
+        $record = ['type' => 'page', 'title' => '404', 'body' => "<section class='mx-auto max-w-3xl px-5 py-24 text-center'><h1 class='text-4xl font-bold text-slate-900'>404</h1><p class='mt-2 text-slate-500'>Page not found.</p></section>"];
     }
     $html = $app->renderBody($record);
 
@@ -79,7 +79,7 @@ if ($path === '/admin/login') {
         if ($auth->attempt($_POST['email'] ?? '', $_POST['password'] ?? '')) {
             $redirect('/admin');
         }
-        echo $app->render('admin/login.html.twig', ['error' => 'Email atau password salah.']);
+        echo $app->render('admin/login.html.twig', ['error' => 'Invalid email or password.']);
         exit;
     }
     echo $app->render('admin/login.html.twig', []);
@@ -96,7 +96,7 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
         $redirect('/admin/login');
     }
     $user = $auth->user();
-    $types = ['pages' => 'Halaman', 'posts' => 'Artikel', 'products' => 'Produk'];
+    $types = ['pages' => 'Pages', 'posts' => 'Articles', 'products' => 'Products'];
 
     // Dashboard summary
     if ($path === '/admin') {
@@ -104,8 +104,8 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
             'user' => $user,
             'types' => $types,
             'active' => 'home',
-            'title' => 'Ringkasan',
-            'subtitle' => 'Metrik situs & konten',
+            'title' => 'Overview',
+            'subtitle' => 'Site & content metrics',
             'counts' => [
                 'pages' => count($app->store->all('pages')),
                 'posts' => count($app->store->all('posts')),
@@ -132,7 +132,7 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
             $app->store->write('settings', $s);
             $redirect('/admin/settings');
         }
-        echo $app->render('admin/settings.html.twig', ['user' => $user, 'types' => $types, 's' => $app->settings, 'active' => 'settings', 'title' => 'Pengaturan', 'subtitle' => 'Disimpan di data/settings.json']);
+        echo $app->render('admin/settings.html.twig', ['user' => $user, 'types' => $types, 's' => $app->settings, 'active' => 'settings', 'title' => 'Settings', 'subtitle' => 'Stored in data/settings.json']);
         exit;
     }
 
@@ -185,7 +185,7 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
             echo $app->render('admin/editor.html.twig', [
                 'user' => $user, 'types' => $types, 'type' => $type,
                 'label' => $types[$type], 'record' => $record,
-                'active' => $type, 'title' => ($record ? 'Edit ' : 'Baru: ') . $types[$type],
+                'active' => $type, 'title' => ($record ? 'Edit ' : 'New: ') . $types[$type],
                 'subtitle' => $record['slug'] ?? '',
             ]);
             exit;
@@ -197,7 +197,7 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
             'user' => $user, 'types' => $types, 'type' => $type,
             'label' => $types[$type], 'rows' => $rows,
             'active' => $type, 'title' => $types[$type],
-            'subtitle' => count($rows) . ' item · diedit langsung, tampil di situs seketika',
+            'subtitle' => count($rows) . ' items · edited here, live on the site instantly',
         ]);
         exit;
     }
@@ -216,7 +216,7 @@ if (preg_match('#^/blog/([a-z0-9\-]+)$#', $path, $m)) {
     echo $renderPublic($app->resolve('posts', $m[1]));
     exit;
 }
-if (preg_match('#^/produk/([a-z0-9\-]+)$#', $path, $m)) {
+if (preg_match('#^/products/([a-z0-9\-]+)$#', $path, $m)) {
     echo $renderPublic($app->resolve('products', $m[1]));
     exit;
 }
