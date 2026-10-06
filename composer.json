@@ -3,7 +3,11 @@
     "description": "A flat-file, no-build mini CMS & dashboard. PHP + Twig + Datastar + SSE. No database, no build step.",
     "type": "project",
     "license": "MIT",
-    "keywords": ["cms", "flat-file", "no-build", "twig", "datastar", "hypermedia", "sse", "php"],
+    "keywords": [
+        "cms", "php-cms", "mini-cms", "lightweight-cms", "flat-file", "flat-file-cms",
+        "no-build", "no-database", "php", "twig", "datastar", "hypermedia",
+        "sse", "server-sent-events", "json", "tailwindcss"
+    ],
     "require": {
         "php": ">=8.2",
         "twig/twig": "^3.14"
