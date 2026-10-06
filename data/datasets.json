@@ -1,0 +1,26 @@
+[
+    {
+        "id": "ds_team",
+        "key": "team",
+        "name": "Team",
+        "rows": [
+            { "name": "Ada Lovelace", "role": "Engineering" },
+            { "name": "Alan Turing", "role": "Research" },
+            { "name": "Grace Hopper", "role": "Product" }
+        ],
+        "created_at": "2026-08-05T10:00:00",
+        "updated_at": "2026-08-05T10:00:00"
+    },
+    {
+        "id": "ds_faq",
+        "key": "faq",
+        "name": "FAQ",
+        "rows": [
+            { "q": "Do I need a database?", "a": "No — all data is stored as JSON files." },
+            { "q": "How does the live update work?", "a": "The server pushes changes to open pages." },
+            { "q": "Is the template safe?", "a": "Yes — content is rendered in a Twig sandbox." }
+        ],
+        "created_at": "2026-08-06T10:00:00",
+        "updated_at": "2026-08-06T10:00:00"
+    }
+]

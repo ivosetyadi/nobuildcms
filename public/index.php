@@ -136,6 +136,107 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
         exit;
     }
 
+    // Snippets: reusable Twig partials called via snippet('key')
+    if (preg_match('#^/admin/snippets(?:/(edit|save|delete))?$#', $path, $m)) {
+        $op = $m[1] ?? 'list';
+        if ($op === 'save' && $method === 'POST') {
+            if (!$auth->can('edit')) { http_response_code(403); exit('Forbidden'); }
+            $app->store->save('snippets', [
+                'id' => $_POST['id'] ?: null,
+                'key' => trim($_POST['key'] ?? ''),
+                'name' => trim($_POST['name'] ?? ''),
+                'body' => $_POST['body'] ?? '',
+            ]);
+            $redirect('/admin/snippets');
+        }
+        if ($op === 'delete' && $method === 'POST') {
+            if (!$auth->can('edit')) { http_response_code(403); exit('Forbidden'); }
+            $app->store->delete('snippets', $_POST['id'] ?? '');
+            $redirect('/admin/snippets');
+        }
+        if ($op === 'edit') {
+            $record = ($_GET['id'] ?? '') ? $app->store->findById('snippets', $_GET['id']) : null;
+            echo $app->render('admin/snippet-editor.html.twig', ['user' => $user, 'types' => $types, 'active' => 'snippets', 'title' => $record ? 'Edit snippet' : 'New snippet', 'subtitle' => $record['key'] ?? '', 'record' => $record]);
+            exit;
+        }
+        echo $app->render('admin/snippets-list.html.twig', ['user' => $user, 'types' => $types, 'active' => 'snippets', 'title' => 'Snippets', 'subtitle' => 'Reusable Twig partials — snippet(\'key\')', 'rows' => $app->store->all('snippets')]);
+        exit;
+    }
+
+    // Datasets: reusable JSON rows read via data('key')
+    if (preg_match('#^/admin/datasets(?:/(edit|save|delete))?$#', $path, $m)) {
+        $op = $m[1] ?? 'list';
+        if ($op === 'save' && $method === 'POST') {
+            if (!$auth->can('edit')) { http_response_code(403); exit('Forbidden'); }
+            $rows = json_decode($_POST['rows'] ?? '[]', true);
+            $app->store->save('datasets', [
+                'id' => $_POST['id'] ?: null,
+                'key' => trim($_POST['key'] ?? ''),
+                'name' => trim($_POST['name'] ?? ''),
+                'rows' => is_array($rows) ? $rows : [],
+            ]);
+            $redirect('/admin/datasets');
+        }
+        if ($op === 'delete' && $method === 'POST') {
+            if (!$auth->can('edit')) { http_response_code(403); exit('Forbidden'); }
+            $app->store->delete('datasets', $_POST['id'] ?? '');
+            $redirect('/admin/datasets');
+        }
+        if ($op === 'edit') {
+            $record = ($_GET['id'] ?? '') ? $app->store->findById('datasets', $_GET['id']) : null;
+            echo $app->render('admin/dataset-editor.html.twig', ['user' => $user, 'types' => $types, 'active' => 'datasets', 'title' => $record ? 'Edit dataset' : 'New dataset', 'subtitle' => $record['key'] ?? '', 'record' => $record, 'rows_json' => $record ? json_encode($record['rows'] ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : "[\n    { \"name\": \"Example\" }\n]"]);
+            exit;
+        }
+        echo $app->render('admin/datasets-list.html.twig', ['user' => $user, 'types' => $types, 'active' => 'datasets', 'title' => 'Datasets', 'subtitle' => 'Reusable JSON rows — data(\'key\')', 'rows' => $app->store->all('datasets')]);
+        exit;
+    }
+
+    // Media: image uploads stored in public/uploads
+    if ($path === '/admin/media' || $path === '/admin/media/delete') {
+        $dir = dirname(__DIR__) . '/public/uploads';
+        $error = null;
+        if ($path === '/admin/media/delete' && $method === 'POST') {
+            if (!$auth->can('edit')) { http_response_code(403); exit('Forbidden'); }
+            $name = basename($_POST['name'] ?? '');
+            if ($name && is_file($dir . '/' . $name)) {
+                @unlink($dir . '/' . $name);
+            }
+            $redirect('/admin/media');
+        }
+        if ($path === '/admin/media' && $method === 'POST') {
+            if (!$auth->can('edit')) { http_response_code(403); exit('Forbidden'); }
+            $allowed = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'];
+            $f = $_FILES['file'] ?? null;
+            if ($f && is_uploaded_file($f['tmp_name'] ?? '')) {
+                $ext = strtolower(pathinfo($f['name'], PATHINFO_EXTENSION));
+                if (!in_array($ext, $allowed, true)) {
+                    $error = 'Unsupported file type.';
+                } elseif (($f['size'] ?? 0) > 2 * 1024 * 1024) {
+                    $error = 'File is larger than 2 MB.';
+                } else {
+                    $base = preg_replace('/[^a-z0-9_-]+/i', '-', pathinfo($f['name'], PATHINFO_FILENAME));
+                    $name = strtolower(trim($base, '-') ?: 'file') . '.' . $ext;
+                    $target = $dir . '/' . $name;
+                    $i = 1;
+                    while (is_file($target)) {
+                        $name = strtolower(trim($base, '-')) . '-' . $i++ . '.' . $ext;
+                        $target = $dir . '/' . $name;
+                    }
+                    move_uploaded_file($f['tmp_name'], $target);
+                }
+            }
+            if (!$error) {
+                $redirect('/admin/media');
+            }
+        }
+        $files = [];
+        foreach (glob($dir . '/*.{png,jpg,jpeg,gif,webp,svg}', GLOB_BRACE) ?: [] as $p) {
+            $files[] = ['name' => basename($p), 'size' => filesize($p), 'url' => '/uploads/' . basename($p)];
+        }
+        echo $app->render('admin/media.html.twig', ['user' => $user, 'types' => $types, 'active' => 'media', 'title' => 'Media', 'subtitle' => 'PNG, JPG, GIF, WebP, SVG · max 2 MB · stored in public/uploads', 'files' => $files, 'error' => $error]);
+        exit;
+    }
+
     // Content: /admin/content/{type}[/edit|/save|/delete]
     if (preg_match('#^/admin/content/(pages|posts|products)(?:/(edit|save|delete))?$#', $path, $m)) {
         $type = $m[1];

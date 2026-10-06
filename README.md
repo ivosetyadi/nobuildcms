@@ -17,6 +17,8 @@ over **Server-Sent Events**.
 - 🧩 **Twig content** — `collection()`, `record()`, `data()`, `snippet()`, `attrs()`, filters `money`/`fdate`, sandboxed
 - ⚡ **SSE live-reload** — save in the dashboard, open public tabs refresh themselves
 - 🔐 **Admin dashboard** — session login, content CRUD (Pages/Articles/Products), settings
+- 📚 **Library** — reusable Snippets (`snippet()`), Datasets (`data()`), and Media uploads
+- 💱 **Configurable currency** — USD default with cents; set any currency in Settings
 - 🎨 **Tailwind via CDN** + **Datastar** vendored — genuinely no build step
 
 ## Quick start
@@ -86,7 +88,8 @@ nobuildcms/
 ## Roadmap
 
 - [x] **Phase 1** — MVP core (public render, SSE reload, auth, content CRUD, settings)
-- [ ] **Phase 2** — Snippets, Datasets, Media upload, off-canvas editor, inline edit
+- [x] **Phase 2 (library)** — Snippets, Datasets, Media upload
+- [ ] **Phase 2 (editor UX)** — off-canvas editor, inline edit
 - [ ] **Phase 3** — Real-time visitor chat (SSE)
 - [ ] **Phase 4** — RBAC (Owner/Editor/Viewer), immutable Audit log, Trash
 - [ ] **Phase 5** — Multi-tenant Workspaces, Datastar Lab examples

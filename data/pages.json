@@ -53,7 +53,7 @@
         "reads": 669,
         "created_at": "2026-07-17T10:00:00",
         "updated_at": "2026-07-17T10:00:00",
-        "body": "<section class='mx-auto max-w-3xl px-5 py-14'> <h1 class='text-3xl font-bold text-slate-900'>About</h1> <p class='mt-4 text-slate-600'>NoBuildCMS is a mini CMS &amp; hypermedia dashboard. The backend is native PHP, templates are sandboxed Twig, reactivity is powered by Datastar, and data is stored as JSON files — no database, no build step.</p> <p class='mt-4 text-slate-600'>Every change in the dashboard shows up on the public site in real time over SSE. Content is a Twig template that can query other collections, datasets, and snippets.</p> </section>"
+        "body": "<section class='mx-auto max-w-3xl px-5 py-14'> <h1 class='text-3xl font-bold text-slate-900'>About</h1> <p class='mt-4 text-slate-600'>NoBuildCMS is a mini CMS &amp; hypermedia dashboard. The backend is native PHP, templates are sandboxed Twig, reactivity is powered by Datastar, and data is stored as JSON files — no database, no build step.</p> <p class='mt-4 text-slate-600'>Every change in the dashboard shows up on the public site in real time over SSE. Content is a Twig template that can query other collections, datasets, and snippets.</p> <h2 class='mt-10 text-xl font-bold text-slate-900'>Team</h2> <p class='mt-1 text-sm text-slate-500'>Rendered from data('team')</p> <div class='mt-4 grid gap-4 sm:grid-cols-3'> {% for m in data('team') %} <div class='rounded-2xl border border-slate-200 bg-white p-5'><div class='font-semibold text-slate-900'>{{ m.name }}</div><div class='text-sm text-slate-500'>{{ m.role }}</div></div> {% endfor %} </div> <div class='mt-10'>{{ snippet('cta') }}</div> </section>"
     },
     {
         "id": "pg_kontak",

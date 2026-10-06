@@ -11,7 +11,7 @@
         "reads": 569,
         "created_at": "2026-10-03T10:25:00",
         "updated_at": "2026-10-04T10:25:00",
-        "body": "<p class='lead text-lg text-slate-600'>Datastar combines two ideas: <strong>signals</strong> on the client and <strong>SSE</strong> from the server.</p><p class='mt-4 text-slate-600'>A signal is a small piece of reactive state that lives in a <code>data-signals</code> attribute. The server can push HTML fragments at any time over SSE, and Datastar <em>morphs</em> the existing DOM so input focus and scroll position are preserved.</p><h2 class='mt-8 text-xl font-bold text-slate-900'>Why hypermedia?</h2><p class='mt-3 text-slate-600'>There is no duplicate state on the client. The source of truth stays on the server; the client only renders.</p>"
+        "body": "<p class='lead text-lg text-slate-600'>Datastar combines two ideas: <strong>signals</strong> on the client and <strong>SSE</strong> from the server.</p><p class='mt-4 text-slate-600'>A signal is a small piece of reactive state that lives in a <code>data-signals</code> attribute. The server can push HTML fragments at any time over SSE, and Datastar <em>morphs</em> the existing DOM so input focus and scroll position are preserved.</p><h2 class='mt-8 text-xl font-bold text-slate-900'>Why hypermedia?</h2><p class='mt-3 text-slate-600'>There is no duplicate state on the client. The source of truth stays on the server; the client only renders.</p>{{ snippet('related_posts', {limit: 3}) }}"
     },
     {
         "id": "po_sse",
