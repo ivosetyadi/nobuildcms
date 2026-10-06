@@ -7,6 +7,7 @@
     <meta name="description" content="{{ page.seo_description ?: (page.excerpt ?: settings.tagline) }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module" src="/assets/datastar.js"></script>
+    {% include 'theme-head.html.twig' %}
 </head>
 <body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
     <header class="sticky top-0 z-20 border-b border-slate-200 bg-white/80 backdrop-blur">
@@ -24,6 +25,7 @@
                 {% if settings.features.online_counter %}
                     <span class="hidden items-center gap-1.5 text-xs text-slate-500 sm:inline-flex"><span class="h-2 w-2 rounded-full bg-emerald-500"></span>{{ online }} online</span>
                 {% endif %}
+                <button type="button" onclick="nbToggleTheme()" title="Toggle theme" class="rounded-lg border border-slate-200 px-2.5 py-1.5 text-sm hover:bg-slate-50">🌓</button>
                 <a href="/admin" class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Dashboard</a>
             </div>
         </div>

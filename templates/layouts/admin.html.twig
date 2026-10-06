@@ -6,6 +6,7 @@
     <title>{{ title|default('Dashboard') ~ ' · ' ~ settings.site_name }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module" src="/assets/datastar.js"></script>
+    {% include 'theme-head.html.twig' %}
 </head>
 <body class="min-h-screen bg-slate-100 text-slate-900 antialiased">
     <div class="flex min-h-screen">
@@ -55,7 +56,10 @@
                     <h1 class="text-lg font-bold">{{ title|default('Overview') }}</h1>
                     <p class="text-sm text-slate-500">{{ subtitle|default('') }}</p>
                 </div>
-                {% block actions %}{% endblock %}
+                <div class="flex items-center gap-3">
+                    <button type="button" onclick="nbToggleTheme()" title="Toggle theme" class="rounded-lg border border-slate-200 px-2.5 py-1.5 text-sm hover:bg-slate-50">🌓</button>
+                    {% block actions %}{% endblock %}
+                </div>
             </header>
             <div class="p-6">{% block main %}{% endblock %}</div>
         </div>

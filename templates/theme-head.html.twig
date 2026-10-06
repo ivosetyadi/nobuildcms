@@ -1,0 +1,39 @@
+<style>
+    :root { --accent: {{ settings.accent|default('#5c78e2') }}; }
+    .bg-indigo-600 { background-color: var(--accent) !important; }
+    .hover\:bg-indigo-500:hover, .hover\:bg-indigo-400:hover { background-color: color-mix(in srgb, var(--accent) 85%, white) !important; }
+    .text-indigo-600, .text-indigo-700 { color: var(--accent) !important; }
+    .bg-indigo-50 { background-color: color-mix(in srgb, var(--accent) 12%, white) !important; }
+    .border-indigo-300, .border-indigo-400, .focus\:border-indigo-400:focus { border-color: var(--accent) !important; }
+    .ring-indigo-200 { --tw-ring-color: var(--accent) !important; }
+    .bg-indigo-500 { background-color: var(--accent) !important; }
+
+    html.dark body { background-color: #0b1220; color: #e2e8f0; }
+    html.dark .bg-white { background-color: #1e293b !important; }
+    html.dark .bg-white\/80 { background-color: rgba(30,41,59,.8) !important; }
+    html.dark .bg-slate-50 { background-color: #0f172a !important; }
+    html.dark .bg-slate-100 { background-color: #0b1220 !important; }
+    html.dark .text-slate-900 { color: #f1f5f9 !important; }
+    html.dark .text-slate-800 { color: #e2e8f0 !important; }
+    html.dark .text-slate-700 { color: #cbd5e1 !important; }
+    html.dark .text-slate-600 { color: #aab6c6 !important; }
+    html.dark .text-slate-500 { color: #94a3b8 !important; }
+    html.dark .text-slate-400 { color: #7688a0 !important; }
+    html.dark .border-slate-200 { border-color: #334155 !important; }
+    html.dark .border-slate-100, html.dark .divide-slate-100 > * { border-color: #273449 !important; }
+    html.dark .bg-slate-50\/40 { background-color: rgba(15,23,42,.4) !important; }
+</style>
+<script>
+    (function () {
+        try {
+            var t = localStorage.getItem('nbtheme');
+            if (t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        } catch (e) {}
+    })();
+    function nbToggleTheme() {
+        var d = document.documentElement.classList.toggle('dark');
+        try { localStorage.setItem('nbtheme', d ? 'dark' : 'light'); } catch (e) {}
+    }
+</script>
