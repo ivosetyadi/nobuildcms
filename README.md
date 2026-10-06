@@ -34,7 +34,7 @@ Open:
 - Dashboard → http://localhost:8000/admin
 
 **Demo login:** `super@admin.com` / `admin123`
-(also `rina@…` editor, `budi@…` viewer — same password). **Change these before deploying.**
+(also `editor@…` editor, `viewer@…` viewer — same password). **Change these before deploying.**
 
 > Tip: open the public site and the dashboard side by side, edit a title or price,
 > hit Save — the public tab reloads itself via SSE.
