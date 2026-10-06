@@ -26,6 +26,15 @@ If you like **HTMX** or **Hotwire/Turbo** but want it in plain **PHP** with no b
 pipeline, this is a full working example of the same hypermedia idea powered by
 [Datastar](https://data-star.dev).
 
+## Screenshots
+
+| Public site | Dashboard |
+| :---: | :---: |
+| [![Public site](docs/screenshots/home.png)](https://nobuildcms.apibase.dev) | [![Dashboard](docs/screenshots/dashboard.png)](https://nobuildcms.apibase.dev/admin) |
+| Hero, stats and content rendered from JSON via Twig | Overview with composition donut, most-read, low-stock and activity feed |
+
+Captured from the [live app](https://nobuildcms.apibase.dev).
+
 ## Highlights
 
 - 📄 **Flat-file store** — everything lives in `data/*.json`; Git-friendly, zero config
