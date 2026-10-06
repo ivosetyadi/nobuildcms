@@ -213,6 +213,11 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
                     $s[$k] = $_POST[$k];
                 }
             }
+            $s['features'] = [
+                'chat' => isset($_POST['feat_chat']),
+                'bot' => isset($_POST['feat_bot']),
+                'online_counter' => isset($_POST['feat_online']),
+            ];
             $app->store->write('settings', $s);
             $audit->log('settings.update', 'settings', [], $user);
             $redirect('/admin/settings');
@@ -310,7 +315,12 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
             http_response_code(403);
             exit('Forbidden');
         }
+        $q = trim($_GET['q'] ?? '');
         $entries = $audit->recent(1000);
+        if ($q !== '') {
+            $ql = mb_strtolower($q);
+            $entries = array_values(array_filter($entries, fn ($e) => str_contains(mb_strtolower(($e['action'] ?? '') . ' ' . ($e['actor'] ?? '') . ' ' . ($e['actor_name'] ?? '') . ' ' . ($e['resource'] ?? '')), $ql)));
+        }
         if ($path === '/admin/audit.csv') {
             header('Content-Type: text/csv');
             header('Content-Disposition: attachment; filename="audit.csv"');
@@ -322,7 +332,7 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
             fclose($out);
             exit;
         }
-        echo $app->render('admin/audit.html.twig', ['user' => $user, 'types' => $types, 'active' => 'audit', 'title' => 'Audit', 'subtitle' => 'Write-once log of sensitive actions', 'entries' => $entries]);
+        echo $app->render('admin/audit.html.twig', ['user' => $user, 'types' => $types, 'active' => 'audit', 'title' => 'Audit', 'subtitle' => count($entries) . ' entries · write-once', 'entries' => $entries, 'q' => $q]);
         exit;
     }
 
