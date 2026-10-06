@@ -451,7 +451,7 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
     }
 
     // Content: /admin/content/{type}[/edit|/save|/delete|/inline|/rename|/duplicate|/toggle]
-    if (preg_match('#^/admin/content/(pages|posts|products)(?:/(edit|save|delete|inline|rename|duplicate|toggle))?$#', $path, $m)) {
+    if (preg_match('#^/admin/content/(pages|posts|products)(?:/(edit|save|delete|inline|rename|duplicate|toggle|preview))?$#', $path, $m)) {
         $type = $m[1];
         $op = $m[2] ?? 'list';
 
@@ -497,14 +497,30 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
                 'body' => $_POST['body'] ?? '',
                 'tags' => array_values(array_filter(array_map('trim', explode(',', $_POST['tags'] ?? '')))),
             ];
+            $rec['seo_title'] = trim($_POST['seo_title'] ?? '');
+            $rec['seo_description'] = trim($_POST['seo_description'] ?? '');
+            // Custom attributes: "key = value" per line.
+            $custom = [];
+            foreach (preg_split('/\r?\n/', $_POST['custom_attrs'] ?? '') as $line) {
+                if (strpos($line, '=') !== false) {
+                    [$k, $v] = explode('=', $line, 2);
+                    $k = trim($k);
+                    $v = trim($v);
+                    if ($k !== '') {
+                        $custom[$k] = is_numeric($v) ? $v + 0 : ($v === 'true' ? true : ($v === 'false' ? false : $v));
+                    }
+                }
+            }
             if ($type === 'products') {
-                $rec['attrs'] = [
+                $rec['attrs'] = array_merge($custom, [
                     'category' => $_POST['category'] ?? '',
                     'price' => round((float) ($_POST['price'] ?? 0), 2),
                     'stock' => (int) ($_POST['stock'] ?? 0),
                     'emoji' => $_POST['emoji'] ?? '📦',
                     'featured' => isset($_POST['featured']),
-                ];
+                ]);
+            } else {
+                $rec['attrs'] = $custom;
             }
             $saved = $app->store->save($type, $rec);
             $audit->log(($_POST['id'] ?? '') ? 'content.update' : 'content.create', $type . ':' . ($saved['id'] ?? ''), ['title' => $saved['title'] ?? ''], $user);
@@ -539,9 +555,12 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
                 $record = $app->decorate($record);
             }
             if (Ds::isRequest()) {
-                Ds::start();
+                $mediaFiles = [];
+                foreach (glob(dirname(__DIR__) . '/public/uploads/*.{png,jpg,jpeg,gif,webp,svg}', GLOB_BRACE) ?: [] as $p) {
+                    $mediaFiles[] = ['name' => basename($p), 'url' => '/uploads/' . basename($p)];
+                }
                 Ds::patchElements($app->render('admin/editor-fragment.html.twig', [
-                    'type' => $type, 'label' => $types[$type], 'record' => $record,
+                    'type' => $type, 'label' => $types[$type], 'record' => $record, 'media' => array_slice($mediaFiles, 0, 12),
                 ]));
                 exit;
             }
@@ -615,6 +634,32 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
                 $audit->log('content.status', $type . ':' . $rec['id'], ['status' => $next], $user);
             }
             Ds::patchElements($patchRows());
+            exit;
+        }
+
+        if ($op === 'preview' && $method === 'POST') {
+            if (!$auth->can('edit')) {
+                http_response_code(403);
+                exit('Forbidden');
+            }
+            $prev = [
+                'id' => $_POST['id'] ?? 'preview',
+                'type' => rtrim($type, 's'),
+                'title' => $_POST['title'] ?? '',
+                'slug' => $_POST['slug'] ?? '',
+                'excerpt' => $_POST['excerpt'] ?? '',
+                'body' => $_POST['body'] ?? '',
+                'attrs' => [],
+            ];
+            if ($type === 'products') {
+                $prev['attrs'] = ['category' => $_POST['category'] ?? '', 'price' => round((float) ($_POST['price'] ?? 0), 2), 'stock' => (int) ($_POST['stock'] ?? 0), 'emoji' => $_POST['emoji'] ?? '📦', 'featured' => isset($_POST['featured'])];
+            }
+            try {
+                $html = $app->renderBody($prev);
+            } catch (\Throwable $e) {
+                $html = '<div class="text-sm text-rose-600">Template error: ' . htmlspecialchars($e->getMessage()) . '</div>';
+            }
+            Ds::patchElements('<div id="editor-preview" class="rounded-lg border border-slate-200 p-4">' . $html . '</div>');
             exit;
         }
 

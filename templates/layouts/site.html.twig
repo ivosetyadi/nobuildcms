@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ page.title ~ ' · ' ~ settings.site_name }}</title>
-    <meta name="description" content="{{ page.excerpt|default(settings.tagline) }}">
+    <title>{{ (page.seo_title ?: page.title) ~ ' · ' ~ settings.site_name }}</title>
+    <meta name="description" content="{{ page.seo_description ?: (page.excerpt ?: settings.tagline) }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module" src="/assets/datastar.js"></script>
 </head>

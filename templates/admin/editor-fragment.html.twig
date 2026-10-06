@@ -1,4 +1,4 @@
-<div id="drawer-body" class="flex h-full flex-col">
+<div id="drawer-body" data-signals="{tab: 'content'}" class="flex h-full flex-col">
     <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
         <div>
             <h2 class="font-semibold">{{ record ? 'Edit' : 'New' }} {{ label }}</h2>
@@ -7,50 +7,93 @@
         <button type="button" class="rounded-lg px-2 py-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700" data-on:click="$drawerOpen = false">✕</button>
     </div>
 
+    <div class="flex gap-1 border-b border-slate-200 px-5">
+        {% for t in [['content', 'Content'], ['fields', 'Fields'], ['seo', 'Attributes & SEO'], ['preview', 'Preview']] %}
+            <button type="button" data-on:click="$tab = '{{ t[0] }}'" data-class="{'border-indigo-500 text-indigo-600': $tab == '{{ t[0] }}', 'border-transparent text-slate-500': $tab != '{{ t[0] }}'}" class="border-b-2 px-3 py-2 text-sm">{{ t[1] }}</button>
+        {% endfor %}
+    </div>
+
     <form class="flex min-h-0 flex-1 flex-col" data-on:submit="@post('/admin/content/{{ type }}/save', {contentType:'form'})">
         <input type="hidden" name="id" value="{{ record.id|default('') }}">
         <input type="hidden" name="layout" value="{{ record.layout|default('full') }}">
 
-        <div class="flex-1 space-y-4 overflow-y-auto p-5">
-            <div>
-                <label class="text-sm font-medium text-slate-700">Title</label>
-                <input name="title" required value="{{ record.title|default('') }}" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400">
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="text-sm font-medium text-slate-700">Slug</label>
-                    <input name="slug" required value="{{ record.slug|default('') }}" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm outline-none focus:border-indigo-400">
-                </div>
-                <div>
-                    <label class="text-sm font-medium text-slate-700">Status</label>
-                    <select name="status" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400">
-                        <option value="published" {{ record.status|default('draft') == 'published' ? 'selected' : '' }}>Published</option>
-                        <option value="draft" {{ record.status|default('draft') != 'published' ? 'selected' : '' }}>Draft</option>
-                    </select>
-                </div>
-            </div>
-            <div>
-                <label class="text-sm font-medium text-slate-700">Summary</label>
-                <textarea name="excerpt" rows="2" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400">{{ record.excerpt|default('') }}</textarea>
-            </div>
-            <div>
-                <label class="text-sm font-medium text-slate-700">Tags (comma separated)</label>
-                <input name="tags" value="{{ record.tags|default([])|join(', ') }}" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400">
-            </div>
-
-            {% if type == 'products' %}
-                <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                    <div><label class="text-sm font-medium text-slate-700">Category</label><input name="category" value="{{ record.attrs.category|default('') }}" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></div>
-                    <div><label class="text-sm font-medium text-slate-700">Price</label><input name="price" type="number" step="0.01" min="0" value="{{ record.attrs.price|default(0) }}" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></div>
-                    <div><label class="text-sm font-medium text-slate-700">Stock</label><input name="stock" type="number" value="{{ record.attrs.stock|default(0) }}" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></div>
-                    <div><label class="text-sm font-medium text-slate-700">Emoji</label><input name="emoji" value="{{ record.attrs.emoji|default('📦') }}" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></div>
-                </div>
-                <label class="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" name="featured" {{ record.attrs.featured|default(false) ? 'checked' : '' }}> Featured product</label>
-            {% endif %}
-
-            <div>
+        <div class="min-h-0 flex-1 overflow-y-auto p-5">
+            {# ── Content ── #}
+            <div data-show="$tab == 'content'">
                 <label class="text-sm font-medium text-slate-700">Body — HTML + Tailwind + Twig</label>
-                <textarea name="body" rows="12" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-xs leading-relaxed outline-none focus:border-indigo-400">{{ record.body|default("<section class='mx-auto max-w-3xl px-5 py-14'>\n  <h1 class='text-3xl font-bold text-slate-900'>{{ item.title }}</h1>\n  <p class='mt-3 text-slate-600'>Write your content here.</p>\n</section>") }}</textarea>
+                {% if media %}
+                    <div class="mt-2 flex flex-wrap gap-2">
+                        <span class="self-center text-xs text-slate-400">Insert media:</span>
+                        {% for f in media %}
+                            <button type="button" title="{{ f.name }}" class="h-9 w-9 overflow-hidden rounded border border-slate-200" data-on:click="document.querySelector('[name=body]').value += '\n<img src=&quot;{{ f.url }}&quot; alt=&quot;&quot;>'">
+                                <img src="{{ f.url }}" alt="{{ f.name }}" class="h-full w-full object-cover">
+                            </button>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <textarea name="body" rows="16" class="mt-2 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-xs leading-relaxed outline-none focus:border-indigo-400">{{ record.body|default("<section class='mx-auto max-w-3xl px-5 py-14'>\n  <h1 class='text-3xl font-bold text-slate-900'>{{ item.title }}</h1>\n  <p class='mt-3 text-slate-600'>Write your content here.</p>\n</section>") }}</textarea>
+            </div>
+
+            {# ── Fields ── #}
+            <div data-show="$tab == 'fields'" style="display:none" class="space-y-4">
+                <div>
+                    <label class="text-sm font-medium text-slate-700">Title</label>
+                    <input name="title" required value="{{ record.title|default('') }}" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-sm font-medium text-slate-700">Slug</label>
+                        <input name="slug" required value="{{ record.slug|default('') }}" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm outline-none focus:border-indigo-400">
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-slate-700">Status</label>
+                        <select name="status" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400">
+                            <option value="published" {{ record.status|default('draft') == 'published' ? 'selected' : '' }}>Published</option>
+                            <option value="draft" {{ record.status|default('draft') != 'published' ? 'selected' : '' }}>Draft</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-slate-700">Summary</label>
+                    <textarea name="excerpt" rows="2" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400">{{ record.excerpt|default('') }}</textarea>
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-slate-700">Tags (comma separated)</label>
+                    <input name="tags" value="{{ record.tags|default([])|join(', ') }}" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400">
+                </div>
+                {% if type == 'products' %}
+                    <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                        <div><label class="text-sm font-medium text-slate-700">Category</label><input name="category" value="{{ record.attrs.category|default('') }}" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></div>
+                        <div><label class="text-sm font-medium text-slate-700">Price</label><input name="price" type="number" step="0.01" min="0" value="{{ record.attrs.price|default(0) }}" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></div>
+                        <div><label class="text-sm font-medium text-slate-700">Stock</label><input name="stock" type="number" value="{{ record.attrs.stock|default(0) }}" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></div>
+                        <div><label class="text-sm font-medium text-slate-700">Emoji</label><input name="emoji" value="{{ record.attrs.emoji|default('📦') }}" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"></div>
+                    </div>
+                    <label class="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" name="featured" {{ record.attrs.featured|default(false) ? 'checked' : '' }}> Featured product</label>
+                {% endif %}
+            </div>
+
+            {# ── Attributes & SEO ── #}
+            <div data-show="$tab == 'seo'" style="display:none" class="space-y-4">
+                <div>
+                    <label class="text-sm font-medium text-slate-700">SEO title</label>
+                    <input name="seo_title" value="{{ record.seo_title|default('') }}" placeholder="Defaults to the title" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-slate-700">Meta description</label>
+                    <textarea name="seo_description" rows="2" placeholder="Defaults to the summary" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400">{{ record.seo_description|default('') }}</textarea>
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-slate-700">Custom attributes — one per line: <code>key = value</code></label>
+                    <p class="mt-1 text-xs text-slate-400">Read in templates as {{ '{{ item.attrs.key }}' }}.</p>
+                    <textarea name="custom_attrs" rows="5" class="mt-1 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-xs outline-none focus:border-indigo-400">{% for k, v in record.attrs|default({}) %}{% if k not in ['category', 'price', 'stock', 'emoji', 'featured'] %}{{ k }} = {{ v }}
+{% endif %}{% endfor %}</textarea>
+                </div>
+            </div>
+
+            {# ── Preview ── #}
+            <div data-show="$tab == 'preview'" style="display:none">
+                <button type="button" class="mb-3 rounded-lg border border-slate-200 px-3 py-1.5 text-sm hover:bg-slate-50" data-on:click="@post('/admin/content/{{ type }}/preview', {contentType:'form'})">↻ Refresh preview</button>
+                <div id="editor-preview" class="rounded-lg border border-slate-200 p-4 text-sm text-slate-400">Click refresh to render the current body.</div>
             </div>
         </div>
 
