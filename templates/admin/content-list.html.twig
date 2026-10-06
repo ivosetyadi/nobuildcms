@@ -27,6 +27,7 @@
                 <option value="-created_at">Newest</option>
                 <option value="title">Title A–Z</option>
                 <option value="-reads">Most read</option>
+                <option value="order">Manual order</option>
             </select>
         </div>
 
@@ -40,4 +41,35 @@
             </div>
         </div>
     </div>
+
+    {% if user.role != 'viewer' %}
+    <script>
+        // Drag-to-reorder content rows (delegated so it survives table patches).
+        (function () {
+            var dragEl = null;
+            document.addEventListener('dragstart', function (e) {
+                var tr = e.target.closest && e.target.closest('tr[data-id]');
+                if (tr) { dragEl = tr; e.dataTransfer.effectAllowed = 'move'; }
+            });
+            document.addEventListener('dragover', function (e) {
+                if (!dragEl) return;
+                var tr = e.target.closest && e.target.closest('tr[data-id]');
+                if (tr && tr !== dragEl && tr.parentNode === dragEl.parentNode) {
+                    e.preventDefault();
+                    var r = tr.getBoundingClientRect();
+                    tr.parentNode.insertBefore(dragEl, (e.clientY - r.top) > r.height / 2 ? tr.nextSibling : tr);
+                }
+            });
+            document.addEventListener('drop', function (e) {
+                if (!dragEl) return;
+                e.preventDefault();
+                var tbody = dragEl.parentNode;
+                var type = tbody.getAttribute('data-type');
+                var ids = [].map.call(tbody.querySelectorAll('tr[data-id]'), function (r) { return r.getAttribute('data-id'); });
+                dragEl = null;
+                if (type) fetch('/admin/content/' + type + '/reorder', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids: ids }) });
+            });
+        })();
+    </script>
+    {% endif %}
 {% endblock %}

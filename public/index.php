@@ -526,7 +526,7 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
     }
 
     // Content: /admin/content/{type}[/edit|/save|/delete|/inline|/rename|/duplicate|/toggle]
-    if (preg_match('#^/admin/content/(pages|posts|products)(?:/(edit|save|delete|inline|rename|duplicate|toggle|preview|bulk))?$#', $path, $m)) {
+    if (preg_match('#^/admin/content/(pages|posts|products)(?:/(edit|save|delete|inline|rename|duplicate|toggle|preview|bulk|reorder))?$#', $path, $m)) {
         $type = $m[1];
         $op = $m[2] ?? 'list';
 
@@ -546,7 +546,12 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
             }
             $desc = str_starts_with($sort, '-');
             $field = ltrim($sort, '-');
-            usort($rows, fn ($a, $b) => ($a[$field] ?? '') <=> ($b[$field] ?? ''));
+            usort($rows, function ($a, $b) use ($field) {
+                if ($field === 'order' || $field === 'reads') {
+                    return ($a[$field] ?? PHP_INT_MAX) <=> ($b[$field] ?? PHP_INT_MAX);
+                }
+                return (string) ($a[$field] ?? '') <=> (string) ($b[$field] ?? '');
+            });
 
             return $desc ? array_reverse(array_values($rows)) : array_values($rows);
         };
@@ -709,6 +714,23 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
                 $audit->log('content.status', $type . ':' . $rec['id'], ['status' => $next], $user);
             }
             Ds::patchElements($patchRows());
+            exit;
+        }
+
+        if ($op === 'reorder' && $method === 'POST') {
+            if (!$auth->can('edit')) {
+                http_response_code(403);
+                exit('Forbidden');
+            }
+            $data = json_decode((string) file_get_contents('php://input'), true);
+            $ids = $data['ids'] ?? [];
+            foreach ((array) $ids as $i => $id) {
+                if ($app->store->findById($type, (string) $id)) {
+                    $app->store->save($type, ['id' => $id, 'order' => $i]);
+                }
+            }
+            $audit->log('content.reorder', $type, ['count' => count((array) $ids)], $user);
+            http_response_code(204);
             exit;
         }
 

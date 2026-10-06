@@ -10,10 +10,10 @@
                 <th class="px-5 py-3"></th>
             </tr>
         </thead>
-        <tbody class="divide-y divide-slate-100">
+        <tbody class="divide-y divide-slate-100" data-type="{{ type }}">
             {% for r in rows %}
-                <tr class="hover:bg-slate-50">
-                    {% if user.role != 'viewer' %}<td class="px-5 py-3"><input type="checkbox" data-on:click="$sel = evt.target.checked ? $sel.concat('{{ r.id }}') : $sel.filter(x => x != '{{ r.id }}')"></td>{% endif %}
+                <tr class="hover:bg-slate-50" {% if user.role != 'viewer' %}draggable="true"{% endif %} data-id="{{ r.id }}">
+                    {% if user.role != 'viewer' %}<td class="px-5 py-3 whitespace-nowrap"><span class="mr-1 cursor-grab select-none text-slate-300" title="Drag to reorder">⠿</span><input type="checkbox" data-on:click="$sel = evt.target.checked ? $sel.concat('{{ r.id }}') : $sel.filter(x => x != '{{ r.id }}')"></td>{% endif %}
                     <td class="px-5 py-3">{% include 'admin/content-title-cell.html.twig' %}</td>
                     <td class="px-5 py-3 font-mono text-xs text-slate-500">{{ r.url }}</td>
                     <td class="px-5 py-3">
