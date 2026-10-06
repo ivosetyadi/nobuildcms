@@ -130,18 +130,46 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
 
     // Dashboard summary
     if ($path === '/admin') {
+        $counts = [
+            'pages' => count($app->store->all('pages')),
+            'posts' => count($app->store->all('posts')),
+            'products' => count($app->store->all('products')),
+        ];
+        // All content for popularity + totals.
+        $allContent = [];
+        foreach (['pages', 'posts', 'products'] as $t) {
+            foreach ($app->store->all($t) as $r) {
+                $r['_type'] = $t;
+                $allContent[] = $r;
+            }
+        }
+        usort($allContent, fn ($a, $b) => ($b['reads'] ?? 0) <=> ($a['reads'] ?? 0));
+        // Products by lowest stock.
+        $products = $app->store->all('products');
+        usort($products, fn ($a, $b) => ($a['attrs']['stock'] ?? 0) <=> ($b['attrs']['stock'] ?? 0));
+        // Donut composition segments (pathLength = 100).
+        $total = array_sum($counts);
+        $segs = [];
+        $cum = 0;
+        foreach ($counts as $k => $v) {
+            $pct = $total > 0 ? round($v / $total * 100, 2) : 0;
+            $segs[] = ['key' => $k, 'pct' => $pct, 'off' => $cum, 'count' => $v];
+            $cum += $pct;
+        }
         echo $app->render('admin/dashboard.html.twig', [
             'user' => $user,
             'types' => $types,
             'active' => 'home',
             'title' => 'Overview',
             'subtitle' => 'Site & content metrics',
-            'counts' => [
-                'pages' => count($app->store->all('pages')),
-                'posts' => count($app->store->all('posts')),
-                'products' => count($app->store->all('products')),
-            ],
-            'recent' => $app->fnCollection('posts', ['sort' => '-updated_at', 'limit' => 5, 'status' => '*']),
+            'counts' => $counts,
+            'total' => $total,
+            'segs' => $segs,
+            'total_reads' => array_sum(array_map(fn ($r) => $r['reads'] ?? 0, $allContent)),
+            'popular' => array_slice($allContent, 0, 6),
+            'low_stock' => array_slice($products, 0, 5),
+            'activity' => $audit->recent(8),
+            'published' => count(array_filter($allContent, fn ($r) => ($r['status'] ?? '') === 'published')),
         ]);
         exit;
     }
