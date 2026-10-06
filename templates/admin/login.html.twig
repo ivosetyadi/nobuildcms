@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Masuk · {{ settings.site_name }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="grid min-h-screen place-items-center bg-slate-900 px-4 text-slate-100">
+    <div class="w-full max-w-sm">
+        <div class="mb-6 flex items-center gap-2 text-xl font-bold">
+            <span class="grid h-8 w-8 place-items-center rounded-lg bg-indigo-600">✳</span>
+            {{ settings.site_name }}
+        </div>
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+            <h1 class="text-lg font-semibold">Masuk ke dashboard</h1>
+            <p class="mt-1 text-sm text-slate-400">Masukkan email dan password.</p>
+            {% if error %}<div class="mt-4 rounded-lg bg-rose-500/15 px-3 py-2 text-sm text-rose-300">{{ error }}</div>{% endif %}
+            <form method="post" action="/admin/login" class="mt-5 space-y-4">
+                <div>
+                    <label class="text-sm text-slate-300">Email</label>
+                    <input name="email" type="email" required value="super@admin.com" class="mt-1 w-full rounded-lg border border-white/10 bg-slate-800 px-3 py-2 text-sm outline-none focus:border-indigo-400">
+                </div>
+                <div>
+                    <label class="text-sm text-slate-300">Password</label>
+                    <input name="password" type="password" required value="admin123" class="mt-1 w-full rounded-lg border border-white/10 bg-slate-800 px-3 py-2 text-sm outline-none focus:border-indigo-400">
+                </div>
+                <button class="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold hover:bg-indigo-500">Masuk</button>
+            </form>
+            <p class="mt-4 text-center text-xs text-slate-500">Demo: super@admin.com / admin123</p>
+        </div>
+        <a href="/" class="mt-4 block text-center text-sm text-slate-400 hover:text-slate-200">← Kembali ke situs</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+    "site_name": "NoBuildCMS",
+    "tagline": "Dashboard & mini CMS tanpa build step.",
+    "footer": "© 2026 NoBuildCMS — PHP + Twig + Datastar.",
+    "currency": "IDR",
+    "accent": "#5c78e2",
+    "whatsapp": "6281234567890",
+    "telegram": "nobuildcms",
+    "email": "halo@nobuildcms.test",
+    "address": "Jl. Margonda Raya No. 1, Depok, Jawa Barat",
+    "features": {
+        "chat": true,
+        "bot": true,
+        "online_counter": true
+    }
+}

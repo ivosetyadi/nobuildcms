@@ -1,0 +1,1 @@
+https://cdn.jsdelivr.net/gh/starfederation/datastar@1.0.4/bundles/datastar.js

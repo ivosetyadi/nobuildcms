@@ -1,0 +1,10 @@
+# Normalize line endings across platforms
+* text=auto eol=lf
+
+*.php   text eol=lf
+*.twig  text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+
+# Vendored third-party asset (exclude from language stats)
+public/assets/datastar.js linguist-vendored

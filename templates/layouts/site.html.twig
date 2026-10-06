@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ page.title ~ ' · ' ~ settings.site_name }}</title>
+    <meta name="description" content="{{ page.excerpt|default(settings.tagline) }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="/assets/datastar.js"></script>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
+    <header class="sticky top-0 z-20 border-b border-slate-200 bg-white/80 backdrop-blur">
+        <div class="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
+            <a href="/" class="flex items-center gap-2 font-bold">
+                <span class="grid h-7 w-7 place-items-center rounded-lg bg-indigo-600 text-white">✳</span>
+                {{ settings.site_name }}
+            </a>
+            <nav class="hidden items-center gap-5 text-sm text-slate-600 md:flex">
+                {% for p in nav %}
+                    <a href="{{ p.url }}" class="hover:text-slate-900 {{ p.url == (page.url|default('')) ? 'font-semibold text-slate-900' : '' }}">{{ p.title }}</a>
+                {% endfor %}
+            </nav>
+            <a href="/admin" class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Dashboard</a>
+        </div>
+    </header>
+
+    <main>{{ content|raw }}</main>
+
+    <footer class="border-t border-slate-200 bg-white">
+        <div class="mx-auto max-w-6xl px-5 py-8 text-sm text-slate-500">{{ settings.footer }}</div>
+    </footer>
+
+    <script>
+        // Live-reload: dashboard edits appear here without a manual refresh.
+        // Lightweight polling keeps this working on the single-threaded `php -S`
+        // dev server. For a production server, swap in the /sse/reload EventSource.
+        (function () {
+            var seen = null;
+            setInterval(function () {
+                fetch('/api/version', { cache: 'no-store' })
+                    .then(function (r) { return r.json(); })
+                    .then(function (d) {
+                        if (seen === null) { seen = d.v; return; }
+                        if (d.v !== seen) { location.reload(); }
+                    })
+                    .catch(function () {});
+            }, 1500);
+        })();
+    </script>
+</body>
+</html>
