@@ -160,7 +160,7 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
             if ($type === 'products') {
                 $rec['attrs'] = [
                     'category' => $_POST['category'] ?? '',
-                    'price' => (int) ($_POST['price'] ?? 0),
+                    'price' => round((float) ($_POST['price'] ?? 0), 2),
                     'stock' => (int) ($_POST['stock'] ?? 0),
                     'emoji' => $_POST['emoji'] ?? '📦',
                     'featured' => isset($_POST['featured']),

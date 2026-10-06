@@ -9,7 +9,7 @@
         "excerpt": "Tactile switches, hot-swap, warm backlight.",
         "tags": ["hardware"],
         "reads": 320,
-        "attrs": { "category": "Hardware", "price": 899000, "stock": 24, "emoji": "⌨️", "featured": true },
+        "attrs": { "category": "Hardware", "price": 89.90, "stock": 24, "emoji": "⌨️", "featured": true },
         "created_at": "2026-08-01T10:00:00",
         "updated_at": "2026-08-01T10:00:00",
         "body": "<p class='text-slate-600'>A hot-swap mechanical keyboard with tactile switches and a warm backlight. Great for typing all day.</p>"
@@ -24,7 +24,7 @@
         "excerpt": "Active noise cancelling for focused work.",
         "tags": ["accessory"],
         "reads": 210,
-        "attrs": { "category": "Accessory", "price": 1290000, "stock": 0, "emoji": "🎧", "featured": true },
+        "attrs": { "category": "Accessory", "price": 129.00, "stock": 0, "emoji": "🎧", "featured": true },
         "created_at": "2026-08-02T10:00:00",
         "updated_at": "2026-08-02T10:00:00",
         "body": "<p class='text-slate-600'>Active Noise Cancelling for long focus sessions. Battery lasts 30 hours.</p>"
@@ -39,7 +39,7 @@
         "excerpt": "Priority support & advanced features.",
         "tags": ["software"],
         "reads": 180,
-        "attrs": { "category": "Software", "price": 1500000, "stock": 999, "emoji": "🪪", "featured": true },
+        "attrs": { "category": "Software", "price": 149.00, "stock": 999, "emoji": "🪪", "featured": true },
         "created_at": "2026-08-03T10:00:00",
         "updated_at": "2026-08-03T10:00:00",
         "body": "<p class='text-slate-600'>A commercial license with priority support, unlimited workspaces, and audit features.</p>"
@@ -54,7 +54,7 @@
         "excerpt": "Vertical design, easy on the wrist.",
         "tags": ["hardware"],
         "reads": 140,
-        "attrs": { "category": "Hardware", "price": 459000, "stock": 12, "emoji": "🖱️", "featured": true },
+        "attrs": { "category": "Hardware", "price": 45.90, "stock": 12, "emoji": "🖱️", "featured": true },
         "created_at": "2026-08-04T10:00:00",
         "updated_at": "2026-08-04T10:00:00",
         "body": "<p class='text-slate-600'>A vertical ergonomic mouse that reduces wrist strain.</p>"

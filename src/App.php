@@ -249,12 +249,33 @@ final class App
         return implode(' ', $out);
     }
 
+    /**
+     * Format a number as money using the configured currency.
+     *
+     * Set `currency` in Settings (any ISO code). Common currencies get the
+     * right symbol and decimals automatically. For anything exotic, override
+     * in data/settings.json with `currency_symbol`, `currency_decimals`, and
+     * `currency_eu_style` (true = 1.234,56 instead of 1,234.56).
+     */
     public function filterMoney($value): string
     {
-        $n = number_format((float) $value, 0, ',', '.');
-        $cur = $this->settings['currency'] ?? 'IDR';
+        $cur = $this->settings['currency'] ?? 'USD';
 
-        return $cur === 'IDR' ? 'Rp ' . $n : $cur . ' ' . $n;
+        $symbols = [
+            'USD' => '$', 'EUR' => '€', 'GBP' => '£', 'JPY' => '¥', 'CNY' => '¥',
+            'IDR' => 'Rp ', 'AUD' => 'A$', 'CAD' => 'C$', 'SGD' => 'S$', 'HKD' => 'HK$',
+            'INR' => '₹', 'KRW' => '₩', 'MYR' => 'RM ', 'THB' => '฿', 'PHP' => '₱',
+            'BRL' => 'R$', 'CHF' => 'CHF ', 'VND' => '₫', 'AED' => 'AED ', 'SAR' => 'SAR ',
+        ];
+        $zeroDecimal = ['IDR', 'JPY', 'KRW', 'VND'];
+        $euStyle = ['EUR', 'IDR', 'BRL', 'VND'];
+
+        $sym = $this->settings['currency_symbol'] ?? ($symbols[$cur] ?? $cur . ' ');
+        $dec = (int) ($this->settings['currency_decimals'] ?? (in_array($cur, $zeroDecimal, true) ? 0 : 2));
+        $useEu = $this->settings['currency_eu_style'] ?? in_array($cur, $euStyle, true);
+        [$ds, $ts] = $useEu ? [',', '.'] : ['.', ','];
+
+        return $sym . number_format((float) $value, $dec, $ds, $ts);
     }
 
     public function filterDate($value, string $fmt = 'd M Y'): string
