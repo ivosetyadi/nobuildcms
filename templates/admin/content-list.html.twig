@@ -1,6 +1,8 @@
 {% extends 'layouts/admin.html.twig' %}
 {% block actions %}
-    <button type="button" class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700" data-on:click="$drawerOpen = true; @get('/admin/content/{{ type }}/edit')">+ New {{ label }}</button>
+    {% if user.role != 'viewer' %}
+        <button type="button" class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700" data-on:click="$drawerOpen = true; @get('/admin/content/{{ type }}/edit')">+ New {{ label }}</button>
+    {% endif %}
 {% endblock %}
 {% block main %}
     <div data-signals="{drawerOpen: false}">

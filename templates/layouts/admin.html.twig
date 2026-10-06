@@ -28,7 +28,14 @@
                 <div class="px-2 pb-1 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Community</div>
                 <a href="/admin/chat" class="block rounded-lg px-3 py-2 {{ active == 'chat' ? 'bg-indigo-50 font-medium text-indigo-700' : 'text-slate-700 hover:bg-slate-50' }}">Chat</a>
                 <div class="px-2 pb-1 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-400">System</div>
-                <a href="/admin/settings" class="block rounded-lg px-3 py-2 {{ active == 'settings' ? 'bg-indigo-50 font-medium text-indigo-700' : 'text-slate-700 hover:bg-slate-50' }}">Settings</a>
+                {% if user.role != 'viewer' %}
+                    <a href="/admin/trash" class="block rounded-lg px-3 py-2 {{ active == 'trash' ? 'bg-indigo-50 font-medium text-indigo-700' : 'text-slate-700 hover:bg-slate-50' }}">Trash</a>
+                {% endif %}
+                {% if user.role == 'owner' %}
+                    <a href="/admin/users" class="block rounded-lg px-3 py-2 {{ active == 'users' ? 'bg-indigo-50 font-medium text-indigo-700' : 'text-slate-700 hover:bg-slate-50' }}">Users</a>
+                    <a href="/admin/audit" class="block rounded-lg px-3 py-2 {{ active == 'audit' ? 'bg-indigo-50 font-medium text-indigo-700' : 'text-slate-700 hover:bg-slate-50' }}">Audit</a>
+                    <a href="/admin/settings" class="block rounded-lg px-3 py-2 {{ active == 'settings' ? 'bg-indigo-50 font-medium text-indigo-700' : 'text-slate-700 hover:bg-slate-50' }}">Settings</a>
+                {% endif %}
                 <a href="/" target="_blank" class="block rounded-lg px-3 py-2 text-slate-700 hover:bg-slate-50">View site ↗</a>
             </nav>
             <div class="border-t border-slate-200 px-5 py-3 text-sm">

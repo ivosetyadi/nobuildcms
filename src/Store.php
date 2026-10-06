@@ -95,8 +95,8 @@ final class Store
 
         if (!$found) {
             $record['id'] = $id ?: ($type[0] ?? 'r') . '_' . substr(bin2hex(random_bytes(6)), 0, 10);
-            $record['created_at'] = $now;
-            $record['updated_at'] = $now;
+            $record['created_at'] = $record['created_at'] ?? $now; // preserved on restore
+            $record['updated_at'] = $record['updated_at'] ?? $now;
             $rows[] = $record;
         }
 

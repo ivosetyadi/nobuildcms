@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 use NoBuildCMS\App;
+use NoBuildCMS\Audit;
 use NoBuildCMS\Auth;
 use NoBuildCMS\Ds;
+use NoBuildCMS\Trash;
 
 // Serve existing static files (assets) directly under the built-in server.
 if (PHP_SAPI === 'cli-server') {
@@ -20,6 +22,8 @@ session_start();
 
 $app = new App(dirname(__DIR__));
 $auth = new Auth($app->store);
+$audit = new Audit($app->store);
+$trash = new Trash($app->store);
 
 // Assign a stable visitor identity.
 if (empty($_SESSION['visitor'])) {
@@ -102,6 +106,7 @@ if ($path === '/chat/poll' || $path === '/chat/send') {
 if ($path === '/admin/login') {
     if ($method === 'POST') {
         if ($auth->attempt($_POST['email'] ?? '', $_POST['password'] ?? '')) {
+            $audit->log('auth.login', $auth->user()['email'] ?? '', [], $auth->user());
             $redirect('/admin');
         }
         echo $app->render('admin/login.html.twig', ['error' => 'Invalid email or password.']);
@@ -155,9 +160,91 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
                 }
             }
             $app->store->write('settings', $s);
+            $audit->log('settings.update', 'settings', [], $user);
             $redirect('/admin/settings');
         }
         echo $app->render('admin/settings.html.twig', ['user' => $user, 'types' => $types, 's' => $app->settings, 'active' => 'settings', 'title' => 'Settings', 'subtitle' => 'Stored in data/settings.json']);
+        exit;
+    }
+
+    // Users: account & role management (owner only)
+    if (preg_match('#^/admin/users(?:/(save|delete))?$#', $path, $m)) {
+        if (!$auth->can('manage_users')) {
+            http_response_code(403);
+            exit('Forbidden');
+        }
+        $op = $m[1] ?? 'list';
+        if ($op === 'save' && $method === 'POST') {
+            $rec = [
+                'id' => $_POST['id'] ?: null,
+                'name' => trim($_POST['name'] ?? ''),
+                'email' => trim($_POST['email'] ?? ''),
+                'role' => in_array($_POST['role'] ?? '', ['owner', 'editor', 'viewer'], true) ? $_POST['role'] : 'viewer',
+                'active' => isset($_POST['active']),
+            ];
+            if (!empty($_POST['password'])) {
+                $rec['password'] = password_hash($_POST['password'], PASSWORD_BCRYPT);
+            }
+            $saved = $app->store->save('users', $rec);
+            $audit->log(($_POST['id'] ?? '') ? 'user.update' : 'user.create', 'users:' . ($saved['id'] ?? ''), ['email' => $saved['email'] ?? '', 'role' => $saved['role'] ?? ''], $user);
+            $redirect('/admin/users');
+        }
+        if ($op === 'delete' && $method === 'POST') {
+            $id = $_POST['id'] ?? '';
+            if ($id && $id !== ($user['id'] ?? '')) {
+                $target = $app->store->findById('users', $id);
+                $trash->capture('users', $target ?? ['id' => $id], $user);
+                $app->store->delete('users', $id);
+                $audit->log('user.delete', 'users:' . $id, ['email' => $target['email'] ?? ''], $user);
+            }
+            $redirect('/admin/users');
+        }
+        echo $app->render('admin/users.html.twig', ['user' => $user, 'types' => $types, 'active' => 'users', 'title' => 'Users', 'subtitle' => 'Owner, editor, and viewer accounts', 'users' => $app->store->all('users')]);
+        exit;
+    }
+
+    // Audit: write-once log of sensitive actions (owner only)
+    if ($path === '/admin/audit' || $path === '/admin/audit.csv') {
+        if (!$auth->can('manage_users')) {
+            http_response_code(403);
+            exit('Forbidden');
+        }
+        $entries = $audit->recent(1000);
+        if ($path === '/admin/audit.csv') {
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="audit.csv"');
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['time', 'actor', 'action', 'resource', 'meta']);
+            foreach ($entries as $e) {
+                fputcsv($out, [$e['ts'] ?? '', $e['actor'] ?? '', $e['action'] ?? '', $e['resource'] ?? '', json_encode($e['meta'] ?? [])]);
+            }
+            fclose($out);
+            exit;
+        }
+        echo $app->render('admin/audit.html.twig', ['user' => $user, 'types' => $types, 'active' => 'audit', 'title' => 'Audit', 'subtitle' => 'Write-once log of sensitive actions', 'entries' => $entries]);
+        exit;
+    }
+
+    // Trash: soft-deleted records (editor + owner)
+    if (preg_match('#^/admin/trash(?:/(restore|purge))?$#', $path, $m)) {
+        if (!$auth->can('edit')) {
+            http_response_code(403);
+            exit('Forbidden');
+        }
+        $op = $m[1] ?? 'list';
+        if ($op === 'restore' && $method === 'POST') {
+            $e = $trash->restore($_POST['trash_id'] ?? '');
+            if ($e) {
+                $audit->log('trash.restore', ($e['type'] ?? '') . ':' . ($e['record']['id'] ?? ''), ['title' => $e['title'] ?? ''], $user);
+            }
+            $redirect('/admin/trash');
+        }
+        if ($op === 'purge' && $method === 'POST') {
+            $trash->purge($_POST['trash_id'] ?? '');
+            $audit->log('trash.purge', $_POST['trash_id'] ?? '', [], $user);
+            $redirect('/admin/trash');
+        }
+        echo $app->render('admin/trash.html.twig', ['user' => $user, 'types' => $types, 'active' => 'trash', 'title' => 'Trash', 'subtitle' => 'Soft-deleted items — restore or delete forever', 'items' => $trash->all()]);
         exit;
     }
 
@@ -308,7 +395,8 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
                     'featured' => isset($_POST['featured']),
                 ];
             }
-            $app->store->save($type, $rec);
+            $saved = $app->store->save($type, $rec);
+            $audit->log(($_POST['id'] ?? '') ? 'content.update' : 'content.create', $type . ':' . ($saved['id'] ?? ''), ['title' => $saved['title'] ?? ''], $user);
             if (Ds::isRequest()) {
                 Ds::start();
                 Ds::patchElements($patchRows());
@@ -323,7 +411,13 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
                 http_response_code(403);
                 exit('Forbidden');
             }
-            $app->store->delete($type, $_POST['id'] ?? '');
+            $id = $_POST['id'] ?? '';
+            $record = $id ? $app->store->findById($type, $id) : null;
+            if ($record) {
+                $trash->capture($type, $record, $user);
+                $app->store->delete($type, $id);
+                $audit->log('content.trash', $type . ':' . $id, ['title' => $record['title'] ?? ''], $user);
+            }
             $redirect('/admin/content/' . $type);
         }
 
@@ -371,6 +465,7 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
             if ($rec) {
                 $title = trim($_POST['title'] ?? '') ?: $rec['title'];
                 $app->store->save($type, ['id' => $id, 'title' => $title]);
+                $audit->log('content.rename', $type . ':' . $id, ['title' => $title], $user);
                 $rec = $app->decorate($app->store->findById($type, $id));
                 Ds::start();
                 Ds::patchElements($app->render('admin/content-title-cell.html.twig', ['type' => $type, 'r' => $rec]));

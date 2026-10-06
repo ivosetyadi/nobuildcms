@@ -6,9 +6,7 @@
         "password": "$2y$10$kf2DUHS0oaW68csehHHwA.x.XYgBAikNTBBFqv7SBGCxE2HzFfxrC",
         "role": "owner",
         "active": true,
-        "last_login": "2026-10-06T15:28:59+00:00",
-        "created_at": "2026-10-06T14:51:29+00:00",
-        "updated_at": "2026-10-06T15:28:59+00:00"
+        "last_login": null
     },
     {
         "id": "u_editor",

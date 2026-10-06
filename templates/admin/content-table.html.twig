@@ -20,11 +20,13 @@
                     <td class="px-5 py-3 text-right text-slate-500">{{ r.reads|default(0) }}</td>
                     <td class="px-5 py-3 text-right whitespace-nowrap">
                         <a href="{{ r.url }}" target="_blank" class="text-xs text-slate-400 hover:text-slate-700">View ↗</a>
-                        <button type="button" class="ml-3 text-xs text-indigo-600 hover:underline" data-on:click="$drawerOpen = true; @get('/admin/content/{{ type }}/edit?id={{ r.id }}')">Edit</button>
-                        <form method="post" action="/admin/content/{{ type }}/delete" class="ml-3 inline" onsubmit="return confirm('Delete {{ r.title }}?')">
-                            <input type="hidden" name="id" value="{{ r.id }}">
-                            <button class="text-xs text-rose-600 hover:underline">Delete</button>
-                        </form>
+                        {% if user.role != 'viewer' %}
+                            <button type="button" class="ml-3 text-xs text-indigo-600 hover:underline" data-on:click="$drawerOpen = true; @get('/admin/content/{{ type }}/edit?id={{ r.id }}')">Edit</button>
+                            <form method="post" action="/admin/content/{{ type }}/delete" class="ml-3 inline" onsubmit="return confirm('Delete {{ r.title }}?')">
+                                <input type="hidden" name="id" value="{{ r.id }}">
+                                <button class="text-xs text-rose-600 hover:underline">Delete</button>
+                            </form>
+                        {% endif %}
                     </td>
                 </tr>
             {% else %}

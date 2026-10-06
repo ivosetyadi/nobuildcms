@@ -1,4 +1,8 @@
 <span id="title-{{ r.id }}" class="inline-flex items-center gap-1">
-    <button type="button" class="text-left font-medium hover:text-indigo-600" data-on:click="$drawerOpen = true; @get('/admin/content/{{ type }}/edit?id={{ r.id }}')">{{ r.title }}</button>
-    <button type="button" title="Rename inline" class="text-slate-300 hover:text-indigo-600" data-on:click="@get('/admin/content/{{ type }}/inline?id={{ r.id }}')">✎</button>
+    {% if user.role == 'viewer' %}
+        <span class="font-medium">{{ r.title }}</span>
+    {% else %}
+        <button type="button" class="text-left font-medium hover:text-indigo-600" data-on:click="$drawerOpen = true; @get('/admin/content/{{ type }}/edit?id={{ r.id }}')">{{ r.title }}</button>
+        <button type="button" title="Rename inline" class="text-slate-300 hover:text-indigo-600" data-on:click="@get('/admin/content/{{ type }}/inline?id={{ r.id }}')">✎</button>
+    {% endif %}
 </span>
