@@ -36,6 +36,21 @@ pipeline, this is a full working example of the same hypermedia idea powered by
 - 🎨 **Theme & currency** — dark/light toggle, configurable accent color, any currency with cents
 - 🆓 **No build step** — Tailwind via CDN, Datastar vendored (MIT), flat-file data
 
+## Deploy
+
+NoBuildCMS is a PHP app, so it needs a host that runs PHP (not static-only
+GitHub Pages). A `Dockerfile` is included — deploy it anywhere that runs
+containers.
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/ivosetyadi/nobuildcms)
+
+- **Render / Railway / Fly.io / Koyeb** — point at this repo (uses `render.yaml` /
+  the `Dockerfile`). Free tiers work. Note: the flat-file data is ephemeral on
+  most free hosts, so edits reset on redeploy — fine for a demo.
+- **Static preview** — the included GitHub Actions workflow renders the *public*
+  pages to static HTML and publishes them to GitHub Pages. That snapshot is
+  read-only (no dashboard, login, chat, or live editing — those need PHP).
+
 ## Quick start
 
 Requires **PHP 8.2+** and **Composer**.

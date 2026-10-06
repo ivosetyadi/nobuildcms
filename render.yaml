@@ -1,0 +1,12 @@
+# One-click deploy to Render — https://render.com
+# Dashboard → New → Blueprint → point at this repo.
+services:
+  - type: web
+    name: nobuildcms
+    runtime: docker
+    plan: free
+    region: singapore
+    branch: main
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    autoDeploy: true

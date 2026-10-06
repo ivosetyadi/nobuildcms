@@ -1,0 +1,67 @@
+name: Static preview → GitHub Pages
+
+# Renders the PUBLIC pages to static HTML and publishes them.
+# This is a read-only snapshot — the dashboard, login, chat and live
+# editing need PHP running (deploy the Docker image for the full app).
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      - name: Install dependencies
+        run: composer install --no-dev --no-interaction --prefer-dist
+
+      - name: Serve and crawl public pages
+        run: |
+          php -S 127.0.0.1:8000 -t public public/index.php >/dev/null 2>&1 &
+          sleep 2
+          php -r '
+            $b = "http://127.0.0.1:8000";
+            $u = [$b . "/"];
+            foreach (json_decode(file_get_contents("data/pages.json"), true) as $p) { if (($p["slug"] ?? "") !== "home") $u[] = $b . "/" . $p["slug"]; }
+            foreach (json_decode(file_get_contents("data/posts.json"), true) as $p) { $u[] = $b . "/blog/" . $p["slug"]; }
+            foreach (json_decode(file_get_contents("data/products.json"), true) as $p) { $u[] = $b . "/products/" . $p["slug"]; }
+            file_put_contents("urls.txt", implode("\n", $u) . "\n");
+          '
+          wget --quiet -e robots=off -E -k -p -nH -P site \
+            --exclude-domains cdn.tailwindcss.com -i urls.txt
+          cp -r public/assets site/assets 2>/dev/null || true
+          touch site/.nojekyll
+
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
