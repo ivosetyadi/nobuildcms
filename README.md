@@ -2,6 +2,9 @@
 
 > A flat-file, **no-build** mini CMS & dashboard. PHP + Twig + Datastar + SSE.
 > No database. No build step. No npm. Edit in the dashboard → the public site updates live.
+>
+> An **HTMX / Hotwire-style hypermedia** app — and one of the more complete
+> **Datastar + PHP examples** around.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![PHP](https://img.shields.io/badge/PHP-8.2%2B-777bb4)
@@ -11,6 +14,10 @@ NoBuildCMS renders every public page from a **JSON record** through a sandboxed
 snippets, and embed **Datastar** hypermedia — all server-rendered and patched live
 over **Server-Sent Events**. The whole thing runs on PHP + Composer; styling is
 Tailwind via CDN and Datastar is vendored, so there is genuinely nothing to build.
+
+If you like **HTMX** or **Hotwire/Turbo** but want it in plain **PHP** with no build
+pipeline, this is a full working example of the same hypermedia idea powered by
+[Datastar](https://data-star.dev).
 
 ## Highlights
 
