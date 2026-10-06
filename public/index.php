@@ -228,8 +228,32 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
 
     // Datastar Lab: live hypermedia examples
     if ($path === '/admin/lab' || str_starts_with($path, '/admin/lab/')) {
+        if (empty($_SESSION['lab_rows'])) {
+            $_SESSION['lab_rows'] = [['id' => 'r1', 'name' => 'Alpha'], ['id' => 'r2', 'name' => 'Beta'], ['id' => 'r3', 'name' => 'Gamma'], ['id' => 'r4', 'name' => 'Delta']];
+        }
         if ($path === '/admin/lab') {
-            echo $app->render('admin/lab.html.twig', ['user' => $user, 'types' => $types, 'active' => 'lab', 'title' => 'Datastar Lab', 'subtitle' => 'Live hypermedia examples']);
+            echo $app->render('admin/lab.html.twig', ['user' => $user, 'types' => $types, 'active' => 'lab', 'title' => 'Datastar Lab', 'subtitle' => 'Live hypermedia examples', 'labrows' => $_SESSION['lab_rows']]);
+            exit;
+        }
+        if ($path === '/admin/lab/delrow') {
+            $id = $_GET['id'] ?? '';
+            if ($id === 'reset') {
+                $_SESSION['lab_rows'] = [['id' => 'r1', 'name' => 'Alpha'], ['id' => 'r2', 'name' => 'Beta'], ['id' => 'r3', 'name' => 'Gamma'], ['id' => 'r4', 'name' => 'Delta']];
+            } else {
+                $_SESSION['lab_rows'] = array_values(array_filter($_SESSION['lab_rows'], fn ($r) => $r['id'] !== $id));
+            }
+            Ds::patchElements($app->render('lab-rows.html.twig', ['rows' => $_SESSION['lab_rows']]), ['selector' => '#lab-rows', 'mode' => 'inner']);
+            exit;
+        }
+        if ($path === '/admin/lab/time') {
+            Ds::patchElements(date('H:i:s'), ['selector' => '#lab-time', 'mode' => 'inner']);
+            exit;
+        }
+        if ($path === '/admin/lab/echo') {
+            $first = htmlspecialchars(trim($_POST['first'] ?? ''));
+            $city = htmlspecialchars(trim($_POST['city'] ?? ''));
+            $msg = ($first || $city) ? ('Hello ' . ($first ?: 'friend') . ($city ? ' from ' . $city : '') . '!') : 'Submit the form above.';
+            Ds::patchElements('<div id="lab-echo" class="mt-3 text-sm text-emerald-600">' . $msg . '</div>');
             exit;
         }
         $sig = Ds::signals();

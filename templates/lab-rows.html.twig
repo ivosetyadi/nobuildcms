@@ -1,0 +1,8 @@
+{% for r in rows %}
+    <div class="flex items-center justify-between py-2">
+        <span class="text-slate-700">{{ r.name }}</span>
+        <button type="button" class="text-xs text-rose-600 hover:underline" data-on:click="@post('/admin/lab/delrow?id={{ r.id }}')">Delete</button>
+    </div>
+{% else %}
+    <div class="py-3 text-slate-400">All rows deleted. <button type="button" class="text-indigo-600 hover:underline" data-on:click="@post('/admin/lab/delrow?id=reset')">Reset</button></div>
+{% endfor %}
