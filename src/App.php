@@ -24,6 +24,7 @@ final class App
     public Store $store;
     public array $settings;
     public array $visitor = ['name' => 'Guest', 'id' => null];
+    public int $online = 0;
 
     private Environment $view;
     private Environment $content;
@@ -88,6 +89,7 @@ final class App
         return array_merge([
             'settings' => $this->settings,
             'visitor' => $this->visitor,
+            'online' => $this->online,
             'now' => date('c'),
         ], $ctx);
     }

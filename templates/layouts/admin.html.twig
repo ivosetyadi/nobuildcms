@@ -27,6 +27,7 @@
                 {% endfor %}
                 <div class="px-2 pb-1 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Community</div>
                 <a href="/admin/chat" class="block rounded-lg px-3 py-2 {{ active == 'chat' ? 'bg-indigo-50 font-medium text-indigo-700' : 'text-slate-700 hover:bg-slate-50' }}">Chat</a>
+                <a href="/admin/visitors" class="block rounded-lg px-3 py-2 {{ active == 'visitors' ? 'bg-indigo-50 font-medium text-indigo-700' : 'text-slate-700 hover:bg-slate-50' }}">Visitors</a>
                 <div class="px-2 pb-1 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-400">System</div>
                 {% if user.role != 'viewer' %}
                     <a href="/admin/trash" class="block rounded-lg px-3 py-2 {{ active == 'trash' ? 'bg-indigo-50 font-medium text-indigo-700' : 'text-slate-700 hover:bg-slate-50' }}">Trash</a>

@@ -7,6 +7,7 @@ use NoBuildCMS\Audit;
 use NoBuildCMS\Auth;
 use NoBuildCMS\Ds;
 use NoBuildCMS\Trash;
+use NoBuildCMS\Visitors;
 
 // Serve existing static files (assets) directly under the built-in server.
 if (PHP_SAPI === 'cli-server') {
@@ -18,12 +19,28 @@ if (PHP_SAPI === 'cli-server') {
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
+/** Tiny rule-based auto-assistant for the lobby chat. */
+function bot_reply(string $msg): ?string
+{
+    $m = mb_strtolower(trim($msg));
+    return match (true) {
+        str_contains($m, 'price') || str_contains($m, 'cost') => 'You can see live prices on the Products page — they are read straight from JSON.',
+        str_contains($m, 'stock') => 'Stock levels are shown on each product card.',
+        str_contains($m, 'dark') || str_contains($m, 'theme') => 'A dark theme can be toggled from the dashboard settings.',
+        str_contains($m, 'build') => 'Right — no build step: PHP + Twig + Datastar over a CDN.',
+        str_contains($m, 'hello') || str_contains($m, 'hi ') || $m === 'hi' => 'Hi there! How can I help?',
+        str_ends_with($m, '?') => 'Good question — a staff member will follow up shortly.',
+        default => null,
+    };
+}
+
 session_start();
 
 $app = new App(dirname(__DIR__));
 $auth = new Auth($app->store);
 $audit = new Audit($app->store);
 $trash = new Trash($app->store);
+$visitors = new Visitors($app->store);
 
 // Assign a stable visitor identity.
 if (empty($_SESSION['visitor'])) {
@@ -89,6 +106,13 @@ if ($path === '/chat/poll' || $path === '/chat/send') {
                 'role' => $staff ? 'staff' : 'guest',
                 'body' => mb_substr($body, 0, 500),
             ]);
+            // Auto-assistant: reply to visitor messages when enabled.
+            if (!$staff && !empty($app->settings['features']['bot'])) {
+                $reply = bot_reply($body);
+                if ($reply) {
+                    $app->store->save('chat', ['name' => 'Assistant', 'role' => 'bot', 'body' => $reply]);
+                }
+            }
         }
     }
     $messages = array_slice($app->store->all('chat'), -50);
@@ -169,6 +193,8 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
             'popular' => array_slice($allContent, 0, 6),
             'low_stock' => array_slice($products, 0, 5),
             'activity' => $audit->recent(8),
+            'online' => $visitors->online(),
+            'visitors_total' => $visitors->total(),
             'published' => count(array_filter($allContent, fn ($r) => ($r['status'] ?? '') === 'published')),
         ]);
         exit;
@@ -363,6 +389,17 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
             'user' => $user, 'types' => $types, 'active' => 'workspaces',
             'title' => 'Workspaces', 'subtitle' => 'Multi-tenant panel — set plan & bind a custom domain',
             'workspaces' => $app->store->all('workspaces'),
+        ]);
+        exit;
+    }
+
+    // Visitors: presence list
+    if ($path === '/admin/visitors') {
+        $rows = array_map(fn ($v) => $v + ['_online' => $visitors->isOnline($v)], array_slice($visitors->all(), 0, 100));
+        echo $app->render('admin/visitors.html.twig', [
+            'user' => $user, 'types' => $types, 'active' => 'visitors', 'title' => 'Visitors',
+            'subtitle' => $visitors->online() . ' online now · ' . $visitors->total() . ' total',
+            'online' => $visitors->online(), 'total' => $visitors->total(), 'visitors' => $rows,
         ]);
         exit;
     }
@@ -713,6 +750,13 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
 }
 
 // ---- Public site ----------------------------------------------------------
+// Track visitor presence (throttled to once per 15s per session).
+if (empty($_SESSION['tracked']) || time() - $_SESSION['tracked'] > 15) {
+    $visitors->touch($_SESSION['visitor']);
+    $_SESSION['tracked'] = time();
+}
+$app->online = $visitors->online();
+
 if ($path === '/') {
     echo $renderPublic($app->resolve('pages', 'home'));
     exit;

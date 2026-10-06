@@ -1,0 +1,30 @@
+[
+    {
+        "id": "v_1a2b3c4d",
+        "name": "Guest 4821",
+        "first_seen": "2026-10-05T09:12:00",
+        "last_seen": "2026-10-05T09:40:00",
+        "visits": 14
+    },
+    {
+        "id": "v_2b3c4d5e",
+        "name": "Guest 7310",
+        "first_seen": "2026-10-05T14:02:00",
+        "last_seen": "2026-10-05T14:20:00",
+        "visits": 6
+    },
+    {
+        "id": "v_3c4d5e6f",
+        "name": "Guest 1188",
+        "first_seen": "2026-10-06T08:30:00",
+        "last_seen": "2026-10-06T08:55:00",
+        "visits": 9
+    },
+    {
+        "id": "v_4d5e6f70",
+        "name": "Guest 9042",
+        "first_seen": "2026-10-06T10:15:00",
+        "last_seen": "2026-10-06T10:31:00",
+        "visits": 3
+    }
+]
