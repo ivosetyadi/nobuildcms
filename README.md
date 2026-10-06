@@ -1,28 +1,33 @@
 # NoBuildCMS
 
 > A flat-file, **no-build** mini CMS & dashboard. PHP + Twig + Datastar + SSE.
-> No database. No build step. No npm. Edit in the dashboard → the public site updates in real time.
+> No database. No build step. No npm. Edit in the dashboard → the public site updates live.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![PHP](https://img.shields.io/badge/PHP-8.2%2B-777bb4)
 
 NoBuildCMS renders every public page from a **JSON record** through a sandboxed
 **Twig** template. Content bodies can query other collections, pull datasets and
-snippets, and embed **Datastar** hypermedia — all server-rendered and pushed live
-over **Server-Sent Events**.
+snippets, and embed **Datastar** hypermedia — all server-rendered and patched live
+over **Server-Sent Events**. The whole thing runs on PHP + Composer; styling is
+Tailwind via CDN and Datastar is vendored, so there is genuinely nothing to build.
 
-## Features (current)
+## Highlights
 
-- 📄 **Flat-file store** — content lives in `data/*.json`, Git-friendly, zero config
-- 🧩 **Twig content** — `collection()`, `record()`, `data()`, `snippet()`, `attrs()`, filters `money`/`fdate`, sandboxed
-- ⚡ **SSE live-reload** — save in the dashboard, open public tabs refresh themselves
-- 🔐 **Admin dashboard** — session login, content CRUD (Pages/Articles/Products), settings
-- 👥 **RBAC + audit + trash** — Owner/Editor/Viewer roles, write-once audit log (CSV export), soft-delete Trash
-- 🏢 **Workspaces + Datastar Lab** — multi-tenant panel (name/key/suffix identity) + live hypermedia examples
-- 💬 **Visitor chat** — floating lobby widget on the site, staff replies from the dashboard
+- 📄 **Flat-file store** — everything lives in `data/*.json`; Git-friendly, zero config
+- 🧩 **Twig content** — `collection()`, `record()`, `data()`, `snippet()`, `attrs()`, filters `money`/`fdate`, all sandboxed
+- ⚡ **Live updates** — dashboard edits appear on open public tabs; the editor patches over Datastar SSE (no reload)
+- ✍️ **Rich editor** — off-canvas drawer with 4 tabs (Content / Fields / Attributes & SEO / Preview), inline rename, live preview, media picker
+- 🗂️ **Content tools** — search, filter, sort, bulk publish/draft/trash, duplicate, drag-to-reorder
+- 📊 **Dashboard** — composition donut, most-read, low-stock, activity feed (all inline SVG, no chart lib)
+- 👥 **RBAC + audit + trash** — Owner/Editor/Viewer, write-once audit log (CSV export), soft-delete Trash
 - 📚 **Library** — reusable Snippets (`snippet()`), Datasets (`data()`), and Media uploads
-- 💱 **Configurable currency** — USD default with cents; set any currency in Settings
-- 🎨 **Tailwind via CDN** + **Datastar** vendored — genuinely no build step
+- 💬 **Visitor chat** — floating lobby widget, a rule-based auto-assistant, and staff replies from the dashboard
+- 🧑‍🤝‍🧑 **Visitors** — presence tracking with an online counter
+- 🏢 **Workspaces** — multi-tenant panel (name = alias, key = minted once, suffix = true identity)
+- 🔬 **Datastar Lab** — 11 live hypermedia examples (search, click-to-edit, load-more, validation, tabs, polling…)
+- 🎨 **Theme & currency** — dark/light toggle, configurable accent color, any currency with cents
+- 🆓 **No build step** — Tailwind via CDN, Datastar vendored (MIT), flat-file data
 
 ## Quick start
 
@@ -34,27 +39,24 @@ composer serve          # => http://localhost:8000
 # or: php -S localhost:8000 -t public public/index.php
 ```
 
-Open:
 - Public site → http://localhost:8000
 - Dashboard → http://localhost:8000/admin
 
+> If port 8000 is unavailable (some Windows setups reserve it), pick another, e.g. `8787`.
+
 **Demo login:** `super@admin.com` / `admin123`
-(also `editor@…` editor, `viewer@…` viewer — same password). **Change these before deploying.**
+(also `editor@nobuildcms.test` and `viewer@nobuildcms.test`, same password). **Change these before deploying.**
 
-> Tip: open the public site and the dashboard side by side, edit a title or price,
-> hit Save — the public tab reloads itself via SSE.
+> Try it: open the public site and the dashboard side by side, edit a title or price,
+> hit Save — the public tab updates itself.
 
-### SSE on the dev server
+## Dev & production notes
 
-PHP's built-in server is single-threaded. To keep the SSE channel from blocking
-other requests during local development, start it with workers:
-
-```bash
-PHP_CLI_SERVER_WORKERS=8 php -S localhost:8000 -t public public/index.php
-```
-
-For production, run behind a real server (nginx/Apache + PHP-FPM) and disable
-output buffering for the `/sse/*` location.
+- The public site **live-reloads via lightweight polling**, so it works on any server
+  including the single-threaded `php -S`. The dashboard's live editing uses Datastar
+  `@get`/`@post` requests that return short, `Content-Length`-delimited SSE patches.
+- A streaming SSE endpoint (`/sse/reload`) is included for production. Behind a real
+  server (nginx/Apache + PHP-FPM), disable output buffering for the `/sse/*` location.
 
 ## Project structure
 
@@ -66,9 +68,13 @@ nobuildcms/
 ├── src/
 │   ├── App.php              # Twig envs + collection/data/snippet/record/attrs/money/fdate
 │   ├── Store.php            # flat-file JSON store
-│   └── Auth.php             # session auth + roles
+│   ├── Auth.php             # session auth + roles
+│   ├── Ds.php               # Datastar SSE patch helpers
+│   ├── Audit.php            # append-only audit log
+│   ├── Trash.php            # soft-delete store
+│   └── Visitors.php         # visitor presence
 ├── templates/               # Twig: site + admin
-├── data/                    # settings, pages, posts, products, users (JSON)
+├── data/                    # settings, pages, posts, products, users, … (JSON)
 └── composer.json
 ```
 
@@ -76,31 +82,31 @@ nobuildcms/
 
 ```twig
 {{ item.title }}                      {# this record's title #}
-{{ item.attrs.price|money }}          {# Rp 1.250.000 #}
+{{ item.attrs.price|money }}          {# $1,250.00 — currency from Settings #}
 {{ now|fdate('d M Y') }}
 
 {% for p in collection('posts', {sort:'-created_at', limit:3, tag:'datastar'}) %}
   <a href="{{ p.url }}">{{ p.title }}</a>
 {% endfor %}
 
-{{ record('product','keyboard-sunrise').attrs.price }}
-{{ snippet('faq_block', {limit: 3}) }}
+{{ record('product','sunrise-keyboard').attrs.price }}
+{{ snippet('cta', {limit: 3}) }}
 {% for m in data('team') %}{{ m.name }}{% endfor %}
+
+{# Datastar works inside content too #}
+<div data-signals="{qty: 1}">
+  <input type="number" data-bind="qty">
+  Total: <span data-text="$qty * 100"></span>
+</div>
 ```
 
-## Roadmap
+## Status
 
-- [x] **Phase 1** — MVP core (public render, SSE reload, auth, content CRUD, settings)
-- [x] **Phase 2 (library)** — Snippets, Datasets, Media upload
-- [x] **Phase 2 (editor UX)** — off-canvas editor, inline edit (Datastar `@get`/`@post` → SSE patches)
-- [x] **Phase 3** — Real-time visitor chat (lobby widget + staff replies in the dashboard)
-- [x] **Phase 4** — RBAC (Owner/Editor/Viewer), write-once Audit log (+CSV), Trash (soft-delete/restore)
-- [x] **Phase 5** — Multi-tenant Workspaces panel + Datastar Lab (live hypermedia examples)
-- [ ] **Phase 4** — RBAC (Owner/Editor/Viewer), immutable Audit log, Trash
-- [ ] **Phase 5** — Multi-tenant Workspaces, Datastar Lab examples
+Feature-complete across the core CMS, the editor, RBAC/audit/trash, workspaces,
+the library, visitor chat, and the Datastar Lab. Contributions welcome.
 
 ## License
 
 [MIT](LICENSE) © 2026 Ivo Setyadi and NoBuildCMS contributors.
-Bundled/third-party components and their licenses are listed in
+Bundled and third-party components and their licenses are listed in
 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
