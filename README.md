@@ -9,6 +9,10 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![PHP](https://img.shields.io/badge/PHP-8.2%2B-777bb4)
 
+**🔗 Live preview:** <https://ivosetyadi.github.io/nobuildcms/> — a static snapshot of the
+public pages. It's **read-only**: the dashboard, login, chat and live editing need PHP
+running, so clone and run it locally (below) for the full thing.
+
 NoBuildCMS renders every public page from a **JSON record** through a sandboxed
 **Twig** template. Content bodies can query other collections, pull datasets and
 snippets, and embed **Datastar** hypermedia — all server-rendered and patched live
@@ -44,12 +48,17 @@ containers.
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/ivosetyadi/nobuildcms)
 
-- **Render / Railway / Fly.io / Koyeb** — point at this repo (uses `render.yaml` /
-  the `Dockerfile`). Free tiers work. Note: the flat-file data is ephemeral on
-  most free hosts, so edits reset on redeploy — fine for a demo.
-- **Static preview** — the included GitHub Actions workflow renders the *public*
-  pages to static HTML and publishes them to GitHub Pages. That snapshot is
-  read-only (no dashboard, login, chat, or live editing — those need PHP).
+- **Static preview (live):** <https://ivosetyadi.github.io/nobuildcms/>. The included
+  GitHub Actions workflow renders the *public* pages to static HTML and publishes
+  them to GitHub Pages on every push. Read-only — no dashboard, login, chat, or
+  live editing (those need PHP).
+- **Full app on a PHP host** — **Render / Railway / Fly.io / Koyeb**, etc., point at
+  this repo (uses `render.yaml` / the `Dockerfile`). Notes: most free tiers now ask
+  for a credit card to verify (Koyeb usually doesn't); free instances sleep when idle
+  and wake on the next request; and the flat-file data is ephemeral, so edits reset on
+  restart — all fine for a demo.
+- **Locally** — the simplest way to see everything: `composer install` then
+  `composer serve` (see [Quick start](#quick-start)).
 
 ## Quick start
 
