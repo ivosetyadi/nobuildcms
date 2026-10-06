@@ -1,0 +1,45 @@
+{% extends 'layouts/admin.html.twig' %}
+{% block main %}
+    <div class="mx-auto max-w-4xl space-y-6">
+        <p class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500">
+            <strong class="text-slate-700">name</strong> is a free alias (rename anytime) ·
+            <strong class="text-slate-700">key</strong> is created once at birth (prefix = name then, kept for history) ·
+            <strong class="text-slate-700">suffix</strong> is the true identity — so URLs never break even after a rename.
+        </p>
+
+        <form method="post" action="/admin/workspaces/create" class="flex items-end gap-3 rounded-2xl border border-slate-200 bg-white p-5">
+            <div class="flex-1">
+                <label class="text-sm font-medium text-slate-700">New workspace</label>
+                <input name="name" required placeholder="Workspace name" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400">
+            </div>
+            <button class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">Create</button>
+        </form>
+
+        {% for w in workspaces %}
+            <form method="post" action="/admin/workspaces/save" class="rounded-2xl border border-slate-200 bg-white p-5">
+                <input type="hidden" name="id" value="{{ w.id }}">
+                <div class="flex items-center justify-between">
+                    <input name="name" value="{{ w.name }}" class="rounded-lg border border-transparent px-2 py-1 text-lg font-semibold text-slate-900 hover:border-slate-200 focus:border-indigo-400 focus:outline-none">
+                    <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">{{ w.plan|capitalize }}</span>
+                </div>
+                <div class="mt-1 px-2 font-mono text-xs text-slate-400">key {{ w.key }} · suffix {{ w.suffix }} · {{ w.members }} member{{ w.members == 1 ? '' : 's' }} · {{ (w.bytes / 1024)|round }} KB</div>
+
+                <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label class="text-xs font-medium text-slate-600">Plan</label>
+                        <select name="plan" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
+                            {% for p in ['free', 'pro', 'business'] %}<option value="{{ p }}" {{ w.plan == p ? 'selected' : '' }}>{{ p|capitalize }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-medium text-slate-600">Custom domain</label>
+                        <input name="domain" value="{{ w.domain }}" placeholder="app.example.com" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400">
+                    </div>
+                </div>
+                <div class="mt-4 text-right">
+                    <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">Save changes</button>
+                </div>
+            </form>
+        {% endfor %}
+    </div>
+{% endblock %}

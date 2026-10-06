@@ -1,0 +1,5 @@
+<div id="lab-edit" class="mt-3 flex items-center gap-2">
+    <input data-bind="labname" autofocus class="rounded-lg border border-indigo-300 px-2 py-1 text-sm outline-none">
+    <button type="button" class="rounded bg-indigo-600 px-2 py-1 text-xs font-semibold text-white hover:bg-indigo-500" data-on:click="@post('/admin/lab/edit')">Save</button>
+    <button type="button" class="rounded px-2 py-1 text-xs text-slate-500 hover:text-slate-800" data-on:click="@get('/admin/lab/edit?cancel=1')">Cancel</button>
+</div>

@@ -1,0 +1,12 @@
+{% if q == '' %}
+    <div class="py-2 text-slate-400">Type to search…</div>
+{% else %}
+    {% for r in results %}
+        <div class="flex items-center justify-between py-2">
+            <span class="text-slate-700">{{ r.title }}</span>
+            <span class="text-xs text-slate-400">{{ r.type }}</span>
+        </div>
+    {% else %}
+        <div class="py-2 text-slate-400">No matches for "{{ q }}".</div>
+    {% endfor %}
+{% endif %}

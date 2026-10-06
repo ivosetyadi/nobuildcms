@@ -167,6 +167,53 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
         exit;
     }
 
+    // Datastar Lab: live hypermedia examples
+    if ($path === '/admin/lab' || str_starts_with($path, '/admin/lab/')) {
+        if ($path === '/admin/lab') {
+            echo $app->render('admin/lab.html.twig', ['user' => $user, 'types' => $types, 'active' => 'lab', 'title' => 'Datastar Lab', 'subtitle' => 'Live hypermedia examples']);
+            exit;
+        }
+        $sig = Ds::signals();
+        if ($path === '/admin/lab/search') {
+            $q = trim((string) ($sig['labq'] ?? ''));
+            $results = [];
+            if ($q !== '') {
+                foreach (['pages', 'posts', 'products'] as $t) {
+                    foreach ($app->fnCollection($t, ['q' => $q, 'status' => '*']) as $r) {
+                        $results[] = $r;
+                    }
+                }
+            }
+            Ds::patchElements($app->render('lab-search-results.html.twig', ['results' => array_slice($results, 0, 8), 'q' => $q]), ['selector' => '#lab-search-results', 'mode' => 'inner']);
+            exit;
+        }
+        if ($path === '/admin/lab/edit') {
+            $tpl = ($method === 'POST' || ($_GET['cancel'] ?? '') !== '') ? 'lab-edit-display.html.twig' : 'lab-edit-form.html.twig';
+            Ds::patchElements($app->render($tpl, []));
+            exit;
+        }
+        if ($path === '/admin/lab/more') {
+            $offset = (int) ($sig['labOffset'] ?? 0);
+            $rows = '';
+            for ($i = $offset + 1; $i <= $offset + 5; $i++) {
+                $rows .= '<div class="py-2 text-slate-700">Item ' . $i . '</div>';
+            }
+            Ds::patchElements($rows, ['selector' => '#lab-list', 'mode' => 'append']);
+            Ds::patchSignals(['labOffset' => $offset + 5]);
+            exit;
+        }
+        if ($path === '/admin/lab/validate') {
+            $email = trim((string) ($sig['labemail'] ?? ''));
+            $ok = $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+            $cls = $email === '' ? 'text-slate-400' : ($ok ? 'text-emerald-600' : 'text-rose-600');
+            $msg = $email === '' ? '' : ($ok ? '✓ Looks valid' : '✗ Not a valid email address');
+            Ds::patchElements('<div id="lab-validate-msg" class="mt-2 text-sm ' . $cls . '">' . $msg . '</div>');
+            exit;
+        }
+        http_response_code(404);
+        exit;
+    }
+
     // Users: account & role management (owner only)
     if (preg_match('#^/admin/users(?:/(save|delete))?$#', $path, $m)) {
         if (!$auth->can('manage_users')) {
@@ -245,6 +292,50 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
             $redirect('/admin/trash');
         }
         echo $app->render('admin/trash.html.twig', ['user' => $user, 'types' => $types, 'active' => 'trash', 'title' => 'Trash', 'subtitle' => 'Soft-deleted items — restore or delete forever', 'items' => $trash->all()]);
+        exit;
+    }
+
+    // Workspaces: multi-tenant panel (owner only)
+    if (preg_match('#^/admin/workspaces(?:/(create|save))?$#', $path, $m)) {
+        if (!$auth->can('manage_users')) {
+            http_response_code(403);
+            exit('Forbidden');
+        }
+        $op = $m[1] ?? 'list';
+        if ($op === 'create' && $method === 'POST') {
+            $name = trim($_POST['name'] ?? '') ?: 'New workspace';
+            $slug = trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($name)), '-') ?: 'workspace';
+            $saved = $app->store->save('workspaces', [
+                'name' => $name,
+                'key' => $slug . '-' . substr(bin2hex(random_bytes(4)), 0, 6),
+                'suffix' => substr(bin2hex(random_bytes(4)), 0, 8),
+                'plan' => 'free',
+                'members' => 1,
+                'bytes' => 0,
+                'domain' => '',
+            ]);
+            $audit->log('workspace.create', 'workspaces:' . ($saved['id'] ?? ''), ['key' => $saved['key'] ?? ''], $user);
+            $redirect('/admin/workspaces');
+        }
+        if ($op === 'save' && $method === 'POST') {
+            $id = $_POST['id'] ?? '';
+            if ($id && $app->store->findById('workspaces', $id)) {
+                // name is a free alias; key and suffix are immutable identity.
+                $app->store->save('workspaces', [
+                    'id' => $id,
+                    'name' => trim($_POST['name'] ?? ''),
+                    'plan' => in_array($_POST['plan'] ?? '', ['free', 'pro', 'business'], true) ? $_POST['plan'] : 'free',
+                    'domain' => trim($_POST['domain'] ?? ''),
+                ]);
+                $audit->log('workspace.update', 'workspaces:' . $id, ['plan' => $_POST['plan'] ?? '', 'domain' => $_POST['domain'] ?? ''], $user);
+            }
+            $redirect('/admin/workspaces');
+        }
+        echo $app->render('admin/workspaces.html.twig', [
+            'user' => $user, 'types' => $types, 'active' => 'workspaces',
+            'title' => 'Workspaces', 'subtitle' => 'Multi-tenant panel — set plan & bind a custom domain',
+            'workspaces' => $app->store->all('workspaces'),
+        ]);
         exit;
     }
 

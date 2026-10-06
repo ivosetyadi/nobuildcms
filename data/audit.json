@@ -1,1 +1,31 @@
-[]
+[
+    {
+        "id": "a_57afe6022ce9",
+        "ts": "2026-10-06T16:12:06+00:00",
+        "actor": "super@admin.com",
+        "actor_name": "Admin User",
+        "action": "auth.login",
+        "resource": "super@admin.com",
+        "meta": []
+    },
+    {
+        "id": "a_65f5397c1ad3",
+        "ts": "2026-10-06T16:12:07+00:00",
+        "actor": "super@admin.com",
+        "actor_name": "Admin User",
+        "action": "workspace.create",
+        "resource": "workspaces:w_e738524e18",
+        "meta": {
+            "key": "test-team-f22790"
+        }
+    },
+    {
+        "id": "a_3f352fdfc0ad",
+        "ts": "2026-10-06T16:15:12+00:00",
+        "actor": "super@admin.com",
+        "actor_name": "Admin User",
+        "action": "auth.login",
+        "resource": "super@admin.com",
+        "meta": []
+    }
+]

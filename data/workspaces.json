@@ -1,0 +1,24 @@
+[
+    {
+        "id": "ws_demo",
+        "name": "Demo Workspace",
+        "key": "demo-x7k2p9",
+        "suffix": "d2e2a8v3",
+        "plan": "free",
+        "members": 1,
+        "bytes": 667420,
+        "domain": "",
+        "created_at": "2026-07-01T10:00:00"
+    },
+    {
+        "id": "ws_acme",
+        "name": "Acme Corp",
+        "key": "acme-corp-z7y5h4",
+        "suffix": "t5k4s2g5",
+        "plan": "pro",
+        "members": 4,
+        "bytes": 1245000,
+        "domain": "app.acme.test",
+        "created_at": "2026-07-15T10:00:00"
+    }
+]

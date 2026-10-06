@@ -18,6 +18,7 @@ over **Server-Sent Events**.
 - ⚡ **SSE live-reload** — save in the dashboard, open public tabs refresh themselves
 - 🔐 **Admin dashboard** — session login, content CRUD (Pages/Articles/Products), settings
 - 👥 **RBAC + audit + trash** — Owner/Editor/Viewer roles, write-once audit log (CSV export), soft-delete Trash
+- 🏢 **Workspaces + Datastar Lab** — multi-tenant panel (name/key/suffix identity) + live hypermedia examples
 - 💬 **Visitor chat** — floating lobby widget on the site, staff replies from the dashboard
 - 📚 **Library** — reusable Snippets (`snippet()`), Datasets (`data()`), and Media uploads
 - 💱 **Configurable currency** — USD default with cents; set any currency in Settings
@@ -94,6 +95,7 @@ nobuildcms/
 - [x] **Phase 2 (editor UX)** — off-canvas editor, inline edit (Datastar `@get`/`@post` → SSE patches)
 - [x] **Phase 3** — Real-time visitor chat (lobby widget + staff replies in the dashboard)
 - [x] **Phase 4** — RBAC (Owner/Editor/Viewer), write-once Audit log (+CSV), Trash (soft-delete/restore)
+- [x] **Phase 5** — Multi-tenant Workspaces panel + Datastar Lab (live hypermedia examples)
 - [ ] **Phase 4** — RBAC (Owner/Editor/Viewer), immutable Audit log, Trash
 - [ ] **Phase 5** — Multi-tenant Workspaces, Datastar Lab examples
 
