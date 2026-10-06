@@ -46,6 +46,9 @@ jobs:
           wget --quiet -e robots=off -E -k -p -nH -P site \
             --exclude-domains cdn.tailwindcss.com -i urls.txt
           cp -r public/assets site/assets 2>/dev/null || true
+          # Point crawl-time absolute URLs (127.0.0.1) at the live app, so the
+          # Dashboard button and dynamic endpoints resolve to the real server.
+          find site -name '*.html' -print0 | xargs -0 sed -i 's|http://127.0.0.1:8000|https://nobuildcms.apibase.dev|g'
           touch site/.nojekyll
 
       - uses: actions/configure-pages@v5

@@ -9,9 +9,12 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![PHP](https://img.shields.io/badge/PHP-8.2%2B-777bb4)
 
-**🔗 Live preview:** <https://ivosetyadi.github.io/nobuildcms/> — a static snapshot of the
-public pages. It's **read-only**: the dashboard, login, chat and live editing need PHP
-running, so clone and run it locally (below) for the full thing.
+**🔗 Live demo (full app):** <https://nobuildcms.apibase.dev> — dashboard, login, chat and
+live editing all work. Sign in at [`/admin`](https://nobuildcms.apibase.dev/admin) with
+`super@admin.com` / `admin123`.
+
+**🔗 Static preview:** <https://ivosetyadi.github.io/nobuildcms/> — a read-only snapshot of
+the public pages on GitHub Pages (its Dashboard button links to the live app above).
 
 NoBuildCMS renders every public page from a **JSON record** through a sandboxed
 **Twig** template. Content bodies can query other collections, pull datasets and
@@ -52,11 +55,11 @@ containers.
   GitHub Actions workflow renders the *public* pages to static HTML and publishes
   them to GitHub Pages on every push. Read-only — no dashboard, login, chat, or
   live editing (those need PHP).
-- **Full app on a PHP host** — **Render / Railway / Fly.io / Koyeb**, etc., point at
-  this repo (uses `render.yaml` / the `Dockerfile`). Notes: most free tiers now ask
-  for a credit card to verify (Koyeb usually doesn't); free instances sleep when idle
-  and wake on the next request; and the flat-file data is ephemeral, so edits reset on
-  restart — all fine for a demo.
+- **Full app (live):** <https://nobuildcms.apibase.dev> runs on a small VPS with
+  **nginx + PHP 8.3-FPM** (the native pattern — no container needed; real SSE works and
+  the flat-file data persists). The `Dockerfile` / `render.yaml` are also included for
+  one-click container hosts (Render / Railway / Fly.io / Koyeb) — note most free tiers
+  now ask for a card and sleep when idle.
 - **Locally** — the simplest way to see everything: `composer install` then
   `composer serve` (see [Quick start](#quick-start)).
 
