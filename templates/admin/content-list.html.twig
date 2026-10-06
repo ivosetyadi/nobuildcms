@@ -5,7 +5,22 @@
     {% endif %}
 {% endblock %}
 {% block main %}
-    <div data-signals="{drawerOpen: false}">
+    <div data-signals="{drawerOpen: false, q: '', status: 'all', sort: '-updated_at'}">
+        <div class="mb-4 flex flex-wrap items-center gap-2">
+            <input data-bind="q" data-on:input__debounce.300ms="@get('/admin/content/{{ type }}')" placeholder="Search title, slug, tag…" class="w-64 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400">
+            <div class="flex rounded-lg border border-slate-200 bg-white p-0.5 text-sm">
+                {% for s in [['all', 'All'], ['published', 'Published'], ['draft', 'Draft']] %}
+                    <button type="button" data-on:click="$status = '{{ s[0] }}'; @get('/admin/content/{{ type }}')" data-class="{'bg-indigo-50 text-indigo-700 font-medium': $status == '{{ s[0] }}'}" class="rounded-md px-3 py-1 text-slate-600">{{ s[1] }}</button>
+                {% endfor %}
+            </div>
+            <select data-bind="sort" data-on:change="@get('/admin/content/{{ type }}')" class="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400">
+                <option value="-updated_at">Recently updated</option>
+                <option value="-created_at">Newest</option>
+                <option value="title">Title A–Z</option>
+                <option value="-reads">Most read</option>
+            </select>
+        </div>
+
         {% include 'admin/content-table.html.twig' %}
 
         {# Off-canvas editor drawer #}

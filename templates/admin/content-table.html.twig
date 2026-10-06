@@ -15,13 +15,18 @@
                     <td class="px-5 py-3">{% include 'admin/content-title-cell.html.twig' %}</td>
                     <td class="px-5 py-3 font-mono text-xs text-slate-500">{{ r.url }}</td>
                     <td class="px-5 py-3">
-                        <span class="rounded-full px-2 py-0.5 text-xs {{ r.status == 'published' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700' }}">{{ r.status == 'published' ? 'Published' : 'Draft' }}</span>
+                        {% if user.role != 'viewer' %}
+                            <button type="button" title="Toggle status" data-on:click="@post('/admin/content/{{ type }}/toggle?id={{ r.id }}')" class="rounded-full px-2 py-0.5 text-xs {{ r.status == 'published' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700' }}">{{ r.status == 'published' ? 'Published' : 'Draft' }}</button>
+                        {% else %}
+                            <span class="rounded-full px-2 py-0.5 text-xs {{ r.status == 'published' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700' }}">{{ r.status == 'published' ? 'Published' : 'Draft' }}</span>
+                        {% endif %}
                     </td>
                     <td class="px-5 py-3 text-right text-slate-500">{{ r.reads|default(0) }}</td>
                     <td class="px-5 py-3 text-right whitespace-nowrap">
                         <a href="{{ r.url }}" target="_blank" class="text-xs text-slate-400 hover:text-slate-700">View ↗</a>
                         {% if user.role != 'viewer' %}
                             <button type="button" class="ml-3 text-xs text-indigo-600 hover:underline" data-on:click="$drawerOpen = true; @get('/admin/content/{{ type }}/edit?id={{ r.id }}')">Edit</button>
+                            <button type="button" class="ml-3 text-xs text-slate-500 hover:underline" data-on:click="@post('/admin/content/{{ type }}/duplicate?id={{ r.id }}')">Duplicate</button>
                             <form method="post" action="/admin/content/{{ type }}/delete" class="ml-3 inline" onsubmit="return confirm('Delete {{ r.title }}?')">
                                 <input type="hidden" name="id" value="{{ r.id }}">
                                 <button class="text-xs text-rose-600 hover:underline">Delete</button>

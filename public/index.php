@@ -450,15 +450,35 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
         exit;
     }
 
-    // Content: /admin/content/{type}[/edit|/save|/delete|/inline|/rename]
-    if (preg_match('#^/admin/content/(pages|posts|products)(?:/(edit|save|delete|inline|rename))?$#', $path, $m)) {
+    // Content: /admin/content/{type}[/edit|/save|/delete|/inline|/rename|/duplicate|/toggle]
+    if (preg_match('#^/admin/content/(pages|posts|products)(?:/(edit|save|delete|inline|rename|duplicate|toggle))?$#', $path, $m)) {
         $type = $m[1];
         $op = $m[2] ?? 'list';
 
-        // Re-render the content table (used by Datastar list patches).
-        $patchRows = function () use ($app, $type, $types) {
+        // Filter / search / sort, read from Datastar signals or query string.
+        $filtered = function () use ($app, $type) {
+            $sig = Ds::signals();
+            $q = trim((string) ($sig['q'] ?? $_GET['q'] ?? ''));
+            $status = (string) ($sig['status'] ?? $_GET['status'] ?? 'all');
+            $sort = (string) ($sig['sort'] ?? $_GET['sort'] ?? '-updated_at');
             $rows = array_map([$app, 'decorate'], $app->store->all($type));
-            return $app->render('admin/content-table.html.twig', ['type' => $type, 'label' => $types[$type], 'rows' => $rows]);
+            if ($status === 'published' || $status === 'draft') {
+                $rows = array_filter($rows, fn ($r) => ($r['status'] ?? 'draft') === $status);
+            }
+            if ($q !== '') {
+                $ql = mb_strtolower($q);
+                $rows = array_filter($rows, fn ($r) => str_contains(mb_strtolower(($r['title'] ?? '') . ' ' . ($r['slug'] ?? '') . ' ' . implode(' ', $r['tags'] ?? [])), $ql));
+            }
+            $desc = str_starts_with($sort, '-');
+            $field = ltrim($sort, '-');
+            usort($rows, fn ($a, $b) => ($a[$field] ?? '') <=> ($b[$field] ?? ''));
+
+            return $desc ? array_reverse(array_values($rows)) : array_values($rows);
+        };
+
+        // Re-render the content table (used by Datastar list patches).
+        $patchRows = function () use ($app, $type, $types, $filtered) {
+            return $app->render('admin/content-table.html.twig', ['type' => $type, 'label' => $types[$type], 'rows' => $filtered()]);
         };
 
         if ($op === 'save' && $method === 'POST') {
@@ -564,13 +584,52 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
             exit;
         }
 
+        if ($op === 'duplicate' && $method === 'POST') {
+            if (!$auth->can('edit')) {
+                http_response_code(403);
+                exit('Forbidden');
+            }
+            $src = $app->store->findById($type, $_GET['id'] ?? $_POST['id'] ?? '');
+            if ($src) {
+                $copy = $src;
+                unset($copy['id'], $copy['created_at'], $copy['updated_at']);
+                $copy['title'] = ($src['title'] ?? 'Untitled') . ' (copy)';
+                $copy['slug'] = ($src['slug'] ?? 'item') . '-copy-' . substr(bin2hex(random_bytes(2)), 0, 4);
+                $copy['status'] = 'draft';
+                $new = $app->store->save($type, $copy);
+                $audit->log('content.duplicate', $type . ':' . ($new['id'] ?? ''), ['from' => $src['id'] ?? ''], $user);
+            }
+            Ds::patchElements($patchRows());
+            exit;
+        }
+
+        if ($op === 'toggle' && $method === 'POST') {
+            if (!$auth->can('edit')) {
+                http_response_code(403);
+                exit('Forbidden');
+            }
+            $rec = $app->store->findById($type, $_GET['id'] ?? $_POST['id'] ?? '');
+            if ($rec) {
+                $next = ($rec['status'] ?? 'draft') === 'published' ? 'draft' : 'published';
+                $app->store->save($type, ['id' => $rec['id'], 'status' => $next]);
+                $audit->log('content.status', $type . ':' . $rec['id'], ['status' => $next], $user);
+            }
+            Ds::patchElements($patchRows());
+            exit;
+        }
+
         // list
-        $rows = array_map([$app, 'decorate'], $app->store->all($type));
+        $rows = $filtered();
+        if (Ds::isRequest()) {
+            Ds::patchElements($patchRows());
+            exit;
+        }
         echo $app->render('admin/content-list.html.twig', [
             'user' => $user, 'types' => $types, 'type' => $type,
             'label' => $types[$type], 'rows' => $rows,
+            'total' => count($app->store->all($type)),
             'active' => $type, 'title' => $types[$type],
-            'subtitle' => count($rows) . ' items · edited here, live on the site instantly',
+            'subtitle' => count($app->store->all($type)) . ' items · edited here, live on the site instantly',
         ]);
         exit;
     }
