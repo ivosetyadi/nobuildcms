@@ -73,6 +73,8 @@ composer serve          # => http://localhost:8000
 # or: php -S localhost:8000 -t public public/index.php
 ```
 
+This runs **your own local copy** — the hosted demo is at <https://nobuildcms.apibase.dev>. Open:
+
 - Public site → http://localhost:8000
 - Dashboard → http://localhost:8000/admin
 
