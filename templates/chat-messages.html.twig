@@ -1,0 +1,11 @@
+{% for m in messages %}
+    <div class="px-3 py-2">
+        <div class="flex items-baseline gap-2">
+            <span class="text-xs font-semibold {{ m.role == 'staff' ? 'text-indigo-600' : 'text-slate-700' }}">{{ m.name }}{% if m.role == 'staff' %} · Staff{% endif %}</span>
+            <span class="text-[10px] text-slate-400">{{ m.created_at|fdate('H:i') }}</span>
+        </div>
+        <div class="text-sm text-slate-700">{{ m.body }}</div>
+    </div>
+{% else %}
+    <div class="py-10 text-center text-sm text-slate-400">No messages yet. Say hi! 👋</div>
+{% endfor %}

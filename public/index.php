@@ -74,6 +74,30 @@ if ($path === '/sse/reload') {
     exit;
 }
 
+// ---- Chat (public lobby) --------------------------------------------------
+if ($path === '/chat/poll' || $path === '/chat/send') {
+    if ($path === '/chat/send' && $method === 'POST') {
+        $body = trim((string) (Ds::signals()['draft'] ?? ''));
+        if ($body !== '') {
+            $staff = ($_GET['staff'] ?? '') === '1' && $auth->check();
+            $app->store->save('chat', [
+                'name' => $staff ? ($auth->user()['name'] ?? 'Staff') : ($app->visitor['name'] ?? 'Guest'),
+                'role' => $staff ? 'staff' : 'guest',
+                'body' => mb_substr($body, 0, 500),
+            ]);
+        }
+    }
+    $messages = array_slice($app->store->all('chat'), -50);
+    Ds::patchElements(
+        $app->render('chat-messages.html.twig', ['messages' => $messages]),
+        ['selector' => '#chat-messages', 'mode' => 'inner']
+    );
+    if ($path === '/chat/send') {
+        Ds::patchSignals(['draft' => '']);
+    }
+    exit;
+}
+
 // ---- Admin ----------------------------------------------------------------
 if ($path === '/admin/login') {
     if ($method === 'POST') {
@@ -134,6 +158,16 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
             $redirect('/admin/settings');
         }
         echo $app->render('admin/settings.html.twig', ['user' => $user, 'types' => $types, 's' => $app->settings, 'active' => 'settings', 'title' => 'Settings', 'subtitle' => 'Stored in data/settings.json']);
+        exit;
+    }
+
+    // Chat: staff view of the visitor lobby
+    if ($path === '/admin/chat') {
+        echo $app->render('admin/chat.html.twig', [
+            'user' => $user, 'types' => $types, 'active' => 'chat',
+            'title' => 'Chat', 'subtitle' => 'Visitor lobby — reply as staff',
+            'messages' => array_slice($app->store->all('chat'), -50),
+        ]);
         exit;
     }
 

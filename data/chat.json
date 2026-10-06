@@ -1,0 +1,5 @@
+[
+    { "id": "m_1", "name": "Maya", "role": "guest", "body": "Is there a dark mode?", "created_at": "2026-10-06T08:52:00" },
+    { "id": "m_2", "name": "Staff", "role": "staff", "body": "Not yet — it's on the roadmap!", "created_at": "2026-10-06T08:55:00" },
+    { "id": "m_3", "name": "Bayu", "role": "guest", "body": "Loving the no-build approach 🙌", "created_at": "2026-10-06T09:10:00" }
+]

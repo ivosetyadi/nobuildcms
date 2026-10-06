@@ -30,6 +30,8 @@
         <div class="mx-auto max-w-6xl px-5 py-8 text-sm text-slate-500">{{ settings.footer }}</div>
     </footer>
 
+    {% if settings.features.chat %}{% include 'chat-widget.html.twig' %}{% endif %}
+
     <script>
         // Live-reload: dashboard edits appear here without a manual refresh.
         // Lightweight polling keeps this working on the single-threaded `php -S`

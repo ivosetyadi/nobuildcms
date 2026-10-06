@@ -25,6 +25,8 @@
                 {% for t, lbl in {'snippets':'Snippets','datasets':'Datasets','media':'Media'} %}
                     <a href="/admin/{{ t }}" class="block rounded-lg px-3 py-2 {{ active == t ? 'bg-indigo-50 font-medium text-indigo-700' : 'text-slate-700 hover:bg-slate-50' }}">{{ lbl }}</a>
                 {% endfor %}
+                <div class="px-2 pb-1 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Community</div>
+                <a href="/admin/chat" class="block rounded-lg px-3 py-2 {{ active == 'chat' ? 'bg-indigo-50 font-medium text-indigo-700' : 'text-slate-700 hover:bg-slate-50' }}">Chat</a>
                 <div class="px-2 pb-1 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-400">System</div>
                 <a href="/admin/settings" class="block rounded-lg px-3 py-2 {{ active == 'settings' ? 'bg-indigo-50 font-medium text-indigo-700' : 'text-slate-700 hover:bg-slate-50' }}">Settings</a>
                 <a href="/" target="_blank" class="block rounded-lg px-3 py-2 text-slate-700 hover:bg-slate-50">View site ↗</a>

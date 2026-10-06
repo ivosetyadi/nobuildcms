@@ -1,0 +1,15 @@
+{% extends 'layouts/admin.html.twig' %}
+{% block main %}
+    <div data-signals="{draft: ''}" class="mx-auto max-w-2xl">
+        <div class="flex h-[32rem] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white">
+            <div class="border-b border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900">Visitor lobby</div>
+            <div id="chat-messages" data-on-interval__duration.3s="@get('/chat/poll')" class="flex-1 divide-y divide-slate-100 overflow-y-auto">
+                {% include 'chat-messages.html.twig' %}
+            </div>
+            <form class="flex items-center gap-2 border-t border-slate-200 p-3" data-on:submit="@post('/chat/send?staff=1')">
+                <input data-bind="draft" autocomplete="off" placeholder="Reply as staff…" class="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-indigo-400">
+                <button class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">Send</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
